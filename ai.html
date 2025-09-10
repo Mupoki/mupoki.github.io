@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mpro ai</title>
+  <style>
+    body {
+      background-color: #0a1a3a; /* dark blue */
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .chat-box {
+      background: #1c2d5a;
+      padding: 10px;
+      border-radius: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin: 5px 0;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Mpro AI</h2>
+  <div class="chat-box" id="chatBox"></div>
+
+  <input type="text" id="userInput" placeholder="Type your message..." />
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    const API_KEY = "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"; // <-- Add your OpenRouter API key here
+    const MODEL = "openai/gpt-3.5-turbo"; // You can change model here
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput").value;
+      if (!input.trim()) return;
+
+      const chatBox = document.getElementById("chatBox");
+      chatBox.innerHTML += `<div class="message"><strong>You:</strong> ${input}</div>`;
+
+      try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: MODEL,
+            messages: [
+              { role: "user", content: input }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const reply = data.choices?.[0]?.message?.content || "No response";
+
+        chatBox.innerHTML += `<div class="message"><strong>Bot:</strong> ${reply}</div>`;
+        document.getElementById("userInput").value = "";
+      } catch (err) {
+        chatBox.innerHTML += `<div class="message"><strong>Bot:</strong> Error: ${err.message}</div>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
