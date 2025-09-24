@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DELL wacth bant (chromebook gift)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f7fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .tracker {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 320px;
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .stat {
+      margin: 10px 0;
+      font-size: 18px;
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: #f0f4f8;
+    }
+    .label {
+      font-weight: bold;
+      color: #444;
+    }
+    .value {
+      color: #0077cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="tracker">
+    <h2>📊 DELL wacth band (chromebook gift)</h2>
+
+    <div class="stat"><span class="label">Steps:</span> <span class="value" id="steps">5000</span></div>
+    <div class="stat"><span class="label">Heart Rate:</span> <span class="value" id="heart">78 bpm</span></div>
+    <div class="stat"><span class="label">Oxygen:</span> <span class="value" id="oxygen">96%</span></div>
+    <div class="stat"><span class="label">Calories Eaten:</span> <span class="value" id="calEaten">1800 kcal</span></div>
+    <div class="stat"><span class="label">Calories Used:</span> <span class="value" id="calUsed">500 kcal</span></div>
+  </div>
+
+  <script>
+    // ✨ You can edit these values easily in code:
+    document.getElementById("steps").innerText = "70000";
+    document.getElementById("heart").innerText = "78 bpm";
+    document.getElementById("oxygen").innerText = "--%";
+    document.getElementById("calEaten").innerText = "10 kcal";
+    document.getElementById("calUsed").innerText = "-- kcal";
+  </script>
+</body>
+</html>
