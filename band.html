@@ -31,12 +31,12 @@
   </style>
 </head>
 <body>
-  <h1>Bands</h1>
-  <button onclick="startApp()">Start</button>
+  <h1>Bands app (use your band here)</h1>
+  <button onclick="startApp()">Connect band</button>
 
   <script>
     function startApp() {
-      let code = prompt("Enter your wach modle to connect:");
+      let code = prompt("Enter your wach code to connect:");
       if (code === "dellbook") {
         window.location.href = "dellbook.html"; // goes to root folder dellbook.html
       } else {
