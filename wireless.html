@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Band  Connection wireless </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #222;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      width: 350px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+    .map {
+      background: #333;
+      border: 2px solid #555;
+      border-radius: 10px;
+      height: 200px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      position: absolute;
+    }
+    .you { background: #00f; top: 80px; left: 140px; }
+    .device { background: #0f0; top: 40px; left: 100px; }
+    .watch { background: #f00; top: 120px; left: 200px; }
+    
+    .devices {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .devices button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 8px;
+      background: #444;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .devices button:hover {
+      background: #666;
+    }
+    .code-btn {
+      display: inline-block;
+      background: #007bff;
+      padding: 12px;
+      width: 100%;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #fff;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .code-btn:hover {
+      background: #3399ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Map</h1>
+    <div class="map">
+      <div class="dot you" title="You"></div>
+      <div class="dot device" title="Belt Band"></div>
+      <div class="dot watch" title="Mu-poki Watch"></div>
+    </div>
+
+    <div class="devices">
+      <a href="dellband.html">
+  <button>Dell Band</button>
+</a>
+
+      <button>Mu-poki Watch</button>
+      <button>Unknown Device</button>
+    </div>
+
+    <!-- Use Code button opens a link -->
+    <a href="band.html" class="code-btn">Use Code</a>
+  </div>
+</body>
+</html>
