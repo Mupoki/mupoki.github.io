@@ -64,6 +64,7 @@
         <button data-tab="hr">❤️ Heart Rate</button>
         <button data-tab="workout">🏃 Workouts</button>
         <button data-tab="sleep">🛌 Sleep</button>
+           <button data-tab="blood">🧪 Blood test</button>
         <button data-tab="watchfaces">🎨 Watch Wallpapers</button>
         <button data-tab="settings">⚙️ Settings</button>
       </div>
@@ -111,6 +112,11 @@
             <h4>Sleep</h4>
             <div class="big" id="sleepVal">7h 12m</div>
             <div class="watch-sub">Last night</div>
+          </div>
+            <div class="card">
+            <h4>Blood</h4>
+            <div class="big" id="sleepVal">AB</div>
+            <div class="watch-sub">Might be AB type need real blood test to see</div>
           </div>
         </div>
 
@@ -166,6 +172,21 @@
           </div>
         </div>
       </div>
+       <!-- blood panal -->
+       <div id="bloodPanel" style="display:none">
+        <div class="detail"><strong>Blood Summary</strong>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <div style="flex:1">
+              <div style="font-size:28px;font-weight:700">Might be AB type</div>
+              <div class="watch-sub">Need real bood test </div>
+            </div>
+           <div style="width:160px;text-align:center">
+  <button class="btn" onclick="window.location.href='bloodtest.html'">Take blood test</button>
+</div>
+
+          </div>
+        </div>
+      </div>
 
       <!-- Watchfaces -->
       <div id="wfPanel" style="display:none">
@@ -209,6 +230,7 @@
       hr: document.getElementById('hrPanel'),
       workout: document.getElementById('workoutPanel'),
       sleep: document.getElementById('sleepPanel'),
+       blood: document.getElementById('bloodPanel'),
       watchfaces: document.getElementById('wfPanel'),
       settings: document.getElementById('settingsPanel')
     };
