@@ -1,66 +1,287 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DELL wacth band (chromebook gift)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bands</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f7fa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .tracker {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 320px;
-      text-align: center;
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #333;
-    }
-    .stat {
-      margin: 10px 0;
-      font-size: 18px;
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: #f0f4f8;
-    }
-    .label {
-      font-weight: bold;
-      color: #444;
-    }
-    .value {
-      color: #0077cc;
-    }
+    :root{--bg:#0f172a;--card:#071133;--muted:#9aa6c0;--accent:#3b82f6;--accent-2:#06b6d4}
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Roboto,Segoe UI,Arial; margin:0; background:linear-gradient(180deg,#071133 0%, #071e3b 100%); color:#e6eef8;min-height:100vh}
+    .wrap{max-width:1100px;margin:18px auto;padding:18px;display:grid;grid-template-columns:320px 1fr;gap:18px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:14px;padding:14px;box-shadow:0 8px 30px rgba(2,6,23,0.5)}
+
+    /* Sidebar */
+    .sidebar{display:flex;flex-direction:column;gap:12px}
+    .device{display:flex;align-items:center;gap:12px}
+    .watch-thumb{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700}
+    .device .meta{line-height:1}
+    .device .meta .name{font-weight:700}
+    .device .meta .sub{font-size:13px;color:var(--muted)}
+    .connect{margin-top:6px}
+    .btn{background:var(--accent);color:#fff;border:none;padding:8px 10px;border-radius:10px;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .menu{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .menu button{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);cursor:pointer}
+    .menu button.active{background:linear-gradient(90deg,rgba(59,130,246,0.14),rgba(6,182,212,0.06));color:#eaf4ff}
+
+    /* Main area */
+    .main{display:flex;flex-direction:column;gap:12px}
+    .topbar{display:flex;justify-content:space-between;align-items:center}
+    .watch-preview{display:flex;gap:14px;align-items:center}
+    .watch-screen{width:240px;height:240px;border-radius:24px;background:linear-gradient(180deg,#06132a,#0b2340);display:flex;align-items:center;justify-content:center;flex-direction:column;box-shadow:inset 0 6px 30px rgba(0,0,0,0.5)}
+    .watch-clock{font-size:36px;font-weight:700}
+    .watch-sub{font-size:13px;color:var(--muted)}
+
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:12px;border-radius:12px;text-align:center}
+    .card h4{margin:0 0 6px 0}
+    .big{font-size:24px;font-weight:700}
+
+    /* Detailed panels */
+    .detail{margin-top:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));padding:12px;border-radius:12px}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+
+    /* small screens */
+    @media (max-width:900px){.wrap{grid-template-columns:1fr;}.watch-screen{width:200px;height:200px}}
   </style>
 </head>
 <body>
-  <div class="tracker">
-    <h2>📊 DELL wacth band (chromebook gift)</h2>
+  <div class="wrap">
+    <aside class="panel sidebar">
+      <div class="device">
+        <div class="watch-thumb" id="thumb">WF</div>
+        <div class="meta">
+          <div class="name">WearFit Pro</div>
+          <div class="sub" id="connState">Connected • 2m ago</div>
+          <div class="connect"><button id="syncBtn" class="btn">Sync</button> <button id="pairBtn" class="ghost">Pair</button></div>
+        </div>
+      </div>
 
-    <div class="stat"><span class="label">Steps:</span> <span class="value" id="steps">5000</span></div>
-    <div class="stat"><span class="label">Heart Rate:</span> <span class="value" id="heart">78 bpm</span></div>
-    <div class="stat"><span class="label">Oxygen:</span> <span class="value" id="oxygen">96%</span></div>
-    <div class="stat"><span class="label">Calories Eaten:</span> <span class="value" id="calEaten">1800 kcal</span></div>
-    <div class="stat"><span class="label">Calories Used:</span> <span class="value" id="calUsed">500 kcal</span></div>
+      <div class="menu">
+        <button data-tab="dashboard" class="active">🏠 Dashboard</button>
+        <button data-tab="hr">❤️ Heart Rate</button>
+        <button data-tab="workout">🏃 Workouts</button>
+        <button data-tab="sleep">🛌 Sleep</button>
+        <button data-tab="watchfaces">🎨 Watchfaces</button>
+        <button data-tab="settings">⚙️ Settings</button>
+      </div>
+
+      <div style="margin-top:12px;color:var(--muted);font-size:13px">Battery</div>
+      <div class="card" style="padding:8px"> <div class="big" id="battery">90%</div> <div class="watch-sub">Remaining</div></div>
+    </aside>
+
+    <main class="panel main">
+      <div class="topbar">
+        <div class="watch-preview">
+          <div class="watch-screen" id="watchScreen">
+            <div class="watch-clock" id="clock">--:--</div>
+            <div class="watch-sub" id="clockDate">--</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:8px">
+              <button class="btn" id="openOnWatch">Open on Watch</button>
+              <button class="ghost" id="screenshot">Sleept</button>
+            </div>
+            <div style="color:var(--muted);font-size:13px">Preview of your selected watchface & quick actions</div>
+          </div>
+        </div>
+
+        <div style="text-align:right;color:var(--muted)">
+          <div>Signed in as <strong>Dellbook</strong></div>
+          <div id="lastSync">Synced just now</div>
+        </div>
+      </div>
+
+      <!-- Dashboard cards -->
+      <div id="dashboardPanel">
+        <div class="cards">
+          <div class="card">
+            <h4>Steps</h4>
+            <div class="big" id="steps">0</div>
+            <div class="watch-sub">Goal: <span id="goal">8000</span></div>
+          </div>
+          <div class="card">
+            <h4>Heart Rate</h4>
+            <div class="big" id="hrVal">--</div>
+            <div class="watch-sub">Last: <span id="hrLast">--</span></div>
+          </div>
+          <div class="card">
+            <h4>Sleep</h4>
+            <div class="big" id="sleepVal">7h 12m</div>
+            <div class="watch-sub">Last night</div>
+          </div>
+        </div>
+
+        <div class="detail">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Activity Today</strong>
+            <div class="watch-sub">Active minutes: <span id="activeMin">18</span></div>
+          </div>
+          <div style="height:140px;margin-top:10px;background:linear-gradient(90deg, rgba(59,130,246,0.12), rgba(6,182,212,0.08));border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)">Activity chart (mock)</div>
+        </div>
+      </div>
+
+      <!-- Heart rate panel -->
+      <div id="hrPanel" style="display:none">
+        <div class="detail"><strong>Real‑time Heart Rate</strong>
+          <div style="display:flex;gap:12px;margin-top:12px;align-items:center">
+            <div style="flex:1">
+              <div style="font-size:42px;font-weight:800" id="hrLive">--</div>
+              <div class="watch-sub">BPM — average: <span id="resting">60</span></div>
+            </div>
+            <div style="width:180px;text-align:center">
+              <button class="btn" id="startHr">Live</button>
+              <div style="height:12px"></div>
+              <button class="ghost" id="stopHr">Stop(go to sleep mode to stop)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Workout panel -->
+      <div id="workoutPanel" style="display:none">
+        <div class="detail"><strong>Workouts</strong>
+          <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+            <button class="ghost modeBtn">Walking</button>
+            <button class="ghost modeBtn">Running</button>
+            <button class="ghost modeBtn">Cycling</button>
+            <button class="ghost modeBtn">HIIT</button>
+            <button class="ghost modeBtn">Swimming</button>
+          </div>
+          <div style="margin-top:12px;color:var(--muted)">Start a workout by running and it will show here.</div>
+        </div>
+      </div>
+
+      <!-- Sleep panel -->
+      <div id="sleepPanel" style="display:none">
+        <div class="detail"><strong>Sleep Summary</strong>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <div style="flex:1">
+              <div style="font-size:28px;font-weight:700">7h 12m</div>
+              <div class="watch-sub">Deep: 2h 10m • Light: 4h 50m</div>
+            </div>
+            <div style="width:160px;text-align:center"><button class="btn">View trends</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchfaces -->
+      <div id="wfPanel" style="display:none">
+        <div class="detail"><strong>WatchStyls</strong>
+          <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+            <div style="width:110px;text-align:center">
+              <div style="width:100px;height:100px;border-radius:12px;background:linear-gradient(135deg,#0ea5a4,#3b82f6);display:flex;align-items:center;justify-content:center;font-weight:800">A</div>
+              <div class="watch-sub">Classic</div>
+              <button class="btn small faceBtn" data-face="A">Apply</button>
+            </div>
+            <div style="width:110px;text-align:center">
+              <div style="width:100px;height:100px;border-radius:12px;background:linear-gradient(135deg,#f97316,#ef4444);display:flex;align-items:center;justify-content:center;font-weight:800">B</div>
+              <div class="watch-sub">Sport</div>
+              <button class="btn small faceBtn" data-face="B">Apply</button>
+            </div>
+            <div style="width:110px;text-align:center">
+              <div style="width:100px;height:100px;border-radius:12px;background:linear-gradient(135deg,#10b981,#60a5fa);display:flex;align-items:center;justify-content:center;font-weight:800">C</div>
+              <div class="watch-sub">Minimal</div>
+              <button class="btn small faceBtn" data-face="C">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div id="settingsPanel" style="display:none">
+        <div class="detail"><strong>Settings</strong>
+          <div style="margin-top:12px" class="row"><div>Units</div><div><select id="units"><option value="metric">Metric</option><option value="imperial">Imperial</option></select></div></div>
+          <div style="margin-top:8px" class="row"><div>Goal steps</div><div><input id="goalInput" type="number" value="8000" style="width:90px;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit"/></div></div>
+        </div>
+      </div>
+
+    </main>
   </div>
 
   <script>
-    // ✨ You can edit these values easily in code:
-    document.getElementById("steps").innerText = "70000";
-    document.getElementById("heart").innerText = "78 bpm";
-    document.getElementById("oxygen").innerText = "--%";
-    document.getElementById("calEaten").innerText = "10 kcal";
-    document.getElementById("calUsed").innerText = "-- kcal";
+    // simple tab system
+    const tabs = document.querySelectorAll('.menu button');
+    const panels = {
+      dashboard: document.getElementById('dashboardPanel'),
+      hr: document.getElementById('hrPanel'),
+      workout: document.getElementById('workoutPanel'),
+      sleep: document.getElementById('sleepPanel'),
+      watchfaces: document.getElementById('wfPanel'),
+      settings: document.getElementById('settingsPanel')
+    };
+    tabs.forEach(t=>t.addEventListener('click', ()=>{
+      tabs.forEach(b=>b.classList.remove('active'));
+      t.classList.add('active');
+      Object.values(panels).forEach(p=>p.style.display='none');
+      panels[t.dataset.tab].style.display = 'block';
+    }));
+
+    // time on watch
+    function updateClock(){
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('clock').textContent = hh+':'+mm;
+      document.getElementById('clockDate').textContent = now.toDateString();
+    }
+    setInterval(updateClock,1000); updateClock();
+
+    // mock data
+    let steps = 1240;
+    let hr = 68;
+    document.getElementById('steps').textContent = steps;
+    document.getElementById('hrVal').textContent = hr + ' bpm';
+    document.getElementById('hrLive').textContent = hr;
+
+    // heart rate simulation
+    let hrInterval = null;
+    document.getElementById('startHr').addEventListener('click', ()=>{
+      if(hrInterval) return;
+      hrInterval = setInterval(()=>{
+        hr = Math.max(50, Math.round(hr + (Math.random()*10-5)));
+        document.getElementById('hrLive').textContent = hr;
+        document.getElementById('hrVal').textContent = hr + ' bpm';
+        document.getElementById('hrLast').textContent = new Date().toLocaleTimeString();
+      }, 900);
+    });
+    document.getElementById('stopHr').addEventListener('click', ()=>{ clearInterval(hrInterval); hrInterval=null; });
+
+    // simple step incrementer to simulate activity
+    setInterval(()=>{ steps += Math.floor(Math.random()*5); document.getElementById('steps').textContent = steps; }, 2500);
+
+    // sync button
+    document.getElementById('syncBtn').addEventListener('click', ()=>{
+      document.getElementById('lastSync').textContent = 'Synced just now';
+      document.getElementById('connState').textContent = 'Connected • just now';
+      document.getElementById('battery').textContent = Math.max(10, parseInt(document.getElementById('battery').textContent)-1) + '%';
+      alert('Sync complete — data updated from watch');
+    });
+
+    // watchface apply
+    document.querySelectorAll('.faceBtn').forEach(b=>b.addEventListener('click', ()=>{
+      const face = b.dataset.face;
+      const screen = document.getElementById('watchScreen');
+      if(face==='A') screen.style.background = 'linear-gradient(180deg,#06132a,#0b2340)';
+      if(face==='B') screen.style.background = 'linear-gradient(135deg,#431b09,#7c2d12)';
+      if(face==='C') screen.style.background = 'linear-gradient(135deg,#05386b,#0ea5a4)';
+      alert('Watchface applied to device');
+    }));
+
+    // settings goal update
+    document.getElementById('goalInput').addEventListener('change', ()=>{
+      document.getElementById('goal').textContent = document.getElementById('goalInput').value;
+    });
+
+    // heavy action placeholders
+    document.getElementById('openOnWatch').addEventListener('click', ()=>{ alert('Opening selected view on watch...'); });
+    document.getElementById('screenshot').addEventListener('click', ()=>{ alert('Screenshot saved to phone.'); });
+
+    // initial panel state
+    Object.values(panels).forEach(p=>p.style.display='none');
+    panels.dashboard.style.display = 'block';
   </script>
 </body>
 </html>
