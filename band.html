@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,12 +89,27 @@
     <h1>Bands App</h1>
     <p>Connect your smart band to continue</p>
     <button onclick="startApp()">Connect Band</button>
+   
+      <button onclick="startdemo()">Use demo band</button>
   </div>
-
+  
+ 
+  <script>
+    function startdemo() {
+      let code = prompt("Enter demo in this box:");
+      if (code === "demo") {
+        window.location.href = "demo.html";
+      } else {
+        alert("Failed to connect. Try again.");
+      }
+    }
+  </script>
+ 
   <script>
     function startApp() {
       let code = prompt("Enter your watch code to connect:");
-      if (code === "dellbook") {
+      if (code === "dellbook")
+     {
         window.location.href = "dellbook.html";
       } else {
         alert("Failed to connect. Try again.");
