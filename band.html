@@ -90,8 +90,8 @@
     <p>Connect your smart band to continue</p>
     
     <button onclick="startApp()">Connect Band</button>
-    <button onclick="startdemo()">Use demo band</button>
-    <button onclick="startwire()">Use wireless</button>
+    <button onclick="startDemo()">Use demo band</button>
+    <button onclick="startWire()">Use wireless</button>
   </div>
   
   <script>
@@ -104,22 +104,12 @@
       }
     }
 
-    function startdemo() {
-      let code = prompt("Enter demo in this box:");
-      if (code === "demo") {
-        window.location.href = "demo.html";
-      } else {
-        alert("Failed to connect. Try again.");
-      }
+    function startDemo() {
+      window.location.href = "demo.html";
     }
 
-    function startwire() {
-      let code = prompt("Enter wire in this box:");
-      if (code === "wire") {
-        window.location.href = "wireless.html";
-      } else {
-        alert("Failed to connect. Try again.");
-      }
+    function startWire() {
+      window.location.href = "wireless.html";
     }
   </script>
 </body>
