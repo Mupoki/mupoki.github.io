@@ -69,7 +69,7 @@
       </div>
 
       <div style="margin-top:12px;color:var(--muted);font-size:13px">Battery</div>
-      <div class="card" style="padding:8px"> <div class="big" id="battery">90%</div> <div class="watch-sub">Remaining</div></div>
+      <div class="card" style="padding:8px"> <div class="big" id="battery">∞%</div> <div class="watch-sub">Remaining</div></div>
     </aside>
 
     <main class="panel main">
@@ -256,7 +256,7 @@
     document.getElementById('syncBtn').addEventListener('click', ()=>{
       document.getElementById('lastSync').textContent = 'Synced just now';
       document.getElementById('connState').textContent = 'Connected • just now';
-      document.getElementById('battery').textContent = Math.max(10, parseInt(document.getElementById('battery').textContent)-1) + '%';
+   
       alert('Sync complete — data updated from watch');
     });
 
