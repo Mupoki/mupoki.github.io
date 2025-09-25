@@ -91,10 +91,21 @@
     <button onclick="startApp()">Connect Band</button>
    
       <button onclick="startdemo()">Use demo band</button>
+     <button onclick="starwire()">Use demo band</button>
   </div>
   
- 
+   <script>
+    function startwire() {
+      let code = prompt("Enter wire in this box:");
+      if (code === "wire") {
+        window.location.href = "wireless.html";
+      } else {
+        alert("Failed to connect. Try again.");
+      }
+    }
+  </script>
   <script>
+  
     function startdemo() {
       let code = prompt("Enter demo in this box:");
       if (code === "demo") {
