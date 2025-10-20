@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MproOS 3.0 — Full Enhanced</title>
+<style>
+  :root{
+    --accent:#0078d7; --bg:#0f1720; --task:#16181d; --win:#111318; --muted:#a8b3c7; --glass: rgba(255,255,255,0.06);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:"Segoe UI",system-ui,Roboto,Arial;color:#e6eef8;background:#091017}
+  body{overflow:hidden;background-size:cover;background-position:center;transition:background 300ms ease}
+  /* Desktop icons */
+  #desktop{position:absolute;inset:0;padding:24px;display:flex;flex-wrap:wrap;gap:18px;align-content:flex-start}
+  .icon{width:88px;text-align:center;color:var(--muted);cursor:pointer;user-select:none}
+  .icon img{width:56px;height:56px;border-radius:10px;display:block;margin:0 auto 6px}
+  .icon .label{font-size:13px}
+  /* Window */
+  .window{position:absolute;width:640px;height:420px;background:linear-gradient(180deg,var(--win),#10131a);border-radius:12px;box-shadow:0 18px 60px rgba(2,6,23,0.65);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,0.03);opacity:0;transform:scale(0.85);transition:transform 250ms ease, opacity 250ms ease;}
+  .window.show{opacity:1;transform:scale(1);}
+  .resizable{resize:both;overflow:auto;min-width:300px;min-height:200px;}
+  .titlebar{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;background:linear-gradient(90deg,var(--accent),rgba(0,0,0,0));cursor:move}
+  .titlebar .title{font-weight:600;color:white}
+  .titlebar .controls button{background:transparent;border:none;color:white;font-size:16px;cursor:pointer;margin-left:6px}
+  .win-body{flex:1;padding:12px;overflow:auto;color:#dbe8ff}
+  .small{font-size:13px;color:var(--muted)}
+  /* taskbar */
+  #taskbar{position:fixed;left:0;right:0;bottom:0;height:56px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.25));backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;gap:12px}
+  #taskbar .tray{position:absolute;right:14px;color:var(--muted);font-size:13px;display:flex;gap:10px;align-items:center}
+  #taskbar .center{display:flex;gap:10px;align-items:center}
+  .tb-btn{background:transparent;border:none;color:var(--muted);padding:6px 10px;border-radius:8px;cursor:pointer}
+  .tb-btn:hover{background:rgba(255,255,255,0.03);color:#fff}
+  /* Start Menu */
+  #startMenu{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);width:380px;background:linear-gradient(180deg,#10121a,#0c0e12);border-radius:12px;padding:10px;box-shadow:0 10px 40px rgba(2,6,23,0.7);display:none;color:var(--muted)}
+  #startMenu .apps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #startMenu .appbtn{background:rgba(255,255,255,0.025);padding:8px;border-radius:8px;text-align:center;cursor:pointer}
+  #startMenu .appbtn img{width:36px;height:36px;display:block;margin:0 auto 6px}
+  /* lock screen */
+  #lockScreen{position:fixed;inset:0;background:rgba(3,6,10,0.8);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;color:#fff}
+  #lockScreen h1{font-weight:700;margin-bottom:6px}
+  #lockScreen input{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);margin-top:10px}
+  /* forms */
+  input[type=text],input[type=password],select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--muted)}
+  button.primary{background:var(--accent);border:none;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
+  .row{display:flex;gap:8px}
+  .col{flex:1}
+  /* small badges */
+  .badge{font-size:11px;padding:4px 8px;background:rgba(255,255,255,0.03);border-radius:999px;color:var(--muted)}
+  /* responsive safety */
+  @media (max-width:800px){.window{width:90%;height:70%}}
+</style>
+</head>
+<body>
+  <!-- LOCK SCREEN -->
+  <div id="lockScreen" style="display:none">
+    <h1>MproOS 3.0</h1>
+    <div class="small">Enter password to unlock</div>
+    <input id="unlockPass" type="password" placeholder="Password (default 1234)" />
+    <div style="height:10px"></div>
+    <div class="row" style="width:260px">
+      <button class="primary" onclick="attemptUnlock()">Unlock</button>
+      <button onclick="showToast('Locked — will remain locked until correct password')">Help</button>
+    </div>
+  </div>
+
+  <!-- DESKTOP -->
+  <div id="desktop"></div>
+
+  <!-- START MENU -->
+  <div id="startMenu">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-weight:700;color:#e6eef8">Start</div>
+      <div class="small">MproOS</div>
+    </div>
+    <div class="apps" id="startApps"></div>
+    <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+      <div class="small">Pinned</div>
+      <div><button onclick="openSettings()" class="tb-btn">Settings</button></div>
+    </div>
+  </div>
+
+  <!-- TASKBAR -->
+  <div id="taskbar">
+    <div class="center">
+      <button id="startBtn" class="tb-btn">☰</button>
+      <div id="quickIcons" style="display:flex;gap:6px"></div>
+      <button class="tb-btn" onclick="lockNow()">🔒 Lock</button>
+    </div>
+    <div class="tray" id="tray">
+      <div id="netBadge" class="badge">Wi-Fi: off</div>
+      <div id="btBadge" class="badge">BT: off</div>
+      <div id="nearBadge" class="badge">Nearby: idle</div>
+      <div id="clock" class="small"></div>
+    </div>
+  </div>
+
+  <!-- Hidden file input for wallpaper -->
+  <input type="file" id="wallpaperFile" accept="image/*" style="display:none" />
+  <input type="file" id="filesChooser" webkitdirectory multiple style="display:none" />
+
+<script>
+const desktop = document.getElementById('desktop');
+const startMenu = document.getElementById('startMenu');
+const startBtn = document.getElementById('startBtn');
+const quickIcons = document.getElementById('quickIcons');
+const tray = document.getElementById('tray');
+const clockEl = document.getElementById('clock');
+let zIndexCounter = 100;
+function newZ(){ return ++zIndexCounter; }
+function show(el){ el.style.display = 'flex'; }
+function hide(el){ el.style.display = 'none'; }
+function toggle(el){ el.style.display = (el.style.display==='flex'||el.style.display==='block')?'none':'flex'; }
+function saveLS(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+function loadLS(k,def){ const v=localStorage.getItem(k); return v?v?JSON.parse(v):def; }
+
+const PASSWORD_KEY='mpro_pass';
+if(!localStorage.getItem(PASSWORD_KEY)) localStorage.setItem(PASSWORD_KEY,JSON.stringify('1234'));
+
+let wifiState = loadLS('mpro_wifi',{on:false,connected:null,networks:[
+  {ssid:'Home-WiFi',strength:4,secured:true},
+  {ssid:'MproGuest',strength:2,secured:false},
+  {ssid:'CafeFree',strength:3,secured:false}
+]});
+let btState = loadLS('mpro_bt',{on:false,paired:[{name:'Phone-XX',id:'p1'},{name:'Headset-AB',id:'p2'}],connected:[]});
+let nearState = loadLS('mpro_near',{lastShared:null});
+
+let wallpaper = localStorage.getItem('mpro_wall') || null;
+if(wallpaper){ document.body.style.backgroundImage=`url(${wallpaper})`; document.body.style.backgroundSize='cover'; }
+else { document.body.style.backgroundImage="url('https://picsum.photos/1600/900?blur=2')"; document.body.style.backgroundSize='cover'; }
+
+const apps = [
+  {id:'chrome',name:'Chrome',icon:'https://www.google.com/favicon.ico',start:true},
+  {id:'files',name:'My Files',icon:'https://img.icons8.com/fluency/48/folder-invoices.png',start:true},
+  {id:'settings',name:'Settings',icon:'https://img.icons8.com/fluency/48/settings.png',start:true},
+  {id:'control',name:'Control Panel',icon:'https://img.icons8.com/fluency/48/control-panel.png',start:true},
+  {id:'tote',name:'Tote',icon:'https://img.icons8.com/fluency/48/box.png',start:true},
+  {id:'pwchange',name:'Change Password',icon:'https://img.icons8.com/fluency/48/key.png',start:false}
+];
+
+// Desktop icons
+function renderDesktop(){
+  desktop.innerHTML='';
+  apps.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='icon';
+    d.innerHTML=`<img src="${a.icon}" alt="${a.name}"><div class="label">${a.name}</div>`;
+    d.onclick=()=>openApp(a.id);
+    desktop.appendChild(d);
+  });
+}
+renderDesktop();
+
+// Start Menu
+function renderStartMenu(){
+  const container=document.getElementById('startApps');
+  container.innerHTML='';
+  apps.forEach(a=>{
+    const btn=document.createElement('div');
+    btn.className='appbtn';
+    btn.innerHTML=`<img src="${a.icon}"><div style="font-size:12px;color:#e9f3ff">${a.name}</div>`;
+    btn.onclick=()=>{ openApp(a.id); startMenu.style.display='none'; };
+    container.appendChild(btn);
+  });
+}
+renderStartMenu();
+
+startBtn.onclick=()=>{ startMenu.style.display = startMenu.style.display==='flex'?'none':'flex'; }
+
+// Clock & badges
+function updateClock(){
+  const d=new Date();
+  const time=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const date=d.toLocaleDateString();
+  clockEl.textContent=`${time} • ${date}`;
+  document.getElementById('netBadge').textContent=`Wi-Fi: ${wifiState.on?(wifiState.connected||'on'):'off'}`;
+  document.getElementById('btBadge').textContent=`BT: ${btState.on?'on':'off'}`;
+  document.getElementById('nearBadge').textContent=nearState.lastShared?'Nearby: new':'Nearby: idle';
+}
+setInterval(updateClock,1000); updateClock();
+
+// Quick badges DOM
+['netBadge','btBadge','nearBadge'].forEach(id=>{
+  const el=document.createElement('div'); el.id=id; el.className='badge'; tray.insertBefore(el, clockEl);
+});
+
+// Draggable
+function makeDraggable(win){
+  const bar=win.querySelector('.titlebar');
+  let offsetX=0, offsetY=0, isDown=false;
+  bar.addEventListener('mousedown',(e)=>{
+    isDown=true; offsetX=e.clientX-win.offsetLeft; offsetY=e.clientY-win.offsetTop; win.style.zIndex=newZ();
+    document.body.style.userSelect='none';
+  });
+  document.addEventListener('mousemove',(e)=>{
+    if(!isDown) return;
+    win.style.left=(e.clientX-offsetX)+'px'; win.style.top=(e.clientY-offsetY)+'px';
+  });
+  document.addEventListener('mouseup',()=>{ isDown=false; document.body.style.userSelect=''; });
+}
+
+// Open App
+function openApp(id){
+  const win=document.createElement('div'); win.className='window resizable'; win.style.zIndex=newZ();
+  let title='App', bodyHTML='<div class="small">No content</div>';
+
+  if(id==='chrome'){
+    title='Chromium';
+    bodyHTML=`<div style="display:flex;gap:8px;margin-bottom:8px">
+      <input id="chromeUrl" type="text" placeholder="Search or paste URL" />
+      <button class="primary" onclick="alert('Simulated: '+document.getElementById('chromeUrl').value)">Go</button>
+    </div>`;
+  }
+  else if(id==='files'){
+    title='My Files';
+    bodyHTML=`<button class="primary" onclick="openFilesChooser()">Open Folder</button><div id="filesArea" style="margin-top:10px;"></div>`;
+  }
+  else if(id==='tote'){
+    title='Tote';
+    bodyHTML=`<div id="toteArea">Files from Files app will appear here</div>`;
+    renderTote();
+  }
+  else if(id==='settings'){ title='Settings'; bodyHTML='<div class="small">Settings panel (simulated)</div>'; }
+  else if(id==='control'){ title='Control Panel'; bodyHTML='<div class="small">Control panel (simulated)</div>'; }
+  else if(id==='pwchange'){
+    title='Change Password';
+    bodyHTML=`<div class="row"><div class="col"><input type="password" id="oldpw" placeholder="Old password"></div></div>
+    <div class="row" style="margin-top:6px"><div class="col"><input type="password" id="newpw" placeholder="New password"></div></div>
+    <div style="margin-top:6px"><button class="primary" onclick="changePass()">Change</button></div>`;
+  }
+
+  win.innerHTML=`<div class="titlebar"><div class="title">${title}</div>
+  <div class="controls"><button onclick="win.remove()">✖</button></div></div>
+  <div class="win-body">${bodyHTML}</div>`;
+
+  desktop.appendChild(win);
+  win.style.left='100px'; win.style.top='80px';
+  setTimeout(()=>win.classList.add('show'),10);
+  makeDraggable(win);
+}
+
+// Files chooser
+function openFilesChooser(){
+  const chooser=document.getElementById('filesChooser');
+  chooser.value=null;
+  chooser.onchange=e=>{
+    const files=Array.from(e.target.files).map(f=>f.name);
+    localStorage.setItem('mpro_files',JSON.stringify(files));
+    renderFilesArea(files);
+    renderTote();
+  };
+  chooser.click();
+}
+
+function renderFilesArea(files){
+  const area=document.getElementById('filesArea');
+  if(!area) return;
+  area.innerHTML='';
+  files.forEach(f=>{ const d=document.createElement('div'); d.textContent=f; d.className='small'; area.appendChild(d); });
+}
+
+// Tote mirrors files
+function renderTote(){
+  const area=document.getElementById('toteArea');
+  if(!area) return;
+  const files=JSON.parse(localStorage.getItem('mpro_files')||'[]');
+  area.innerHTML='';
+  files.forEach(f=>{ const d=document.createElement('div'); d.textContent=f; d.className='small'; area.appendChild(d); });
+}
+
+// Lock screen
+function lockNow(){ show(document.getElementById('lockScreen')); }
+function attemptUnlock(){
+  const pw=document.getElementById('unlockPass').value;
+  if(pw===JSON.parse(localStorage.getItem(PASSWORD_KEY))){ hide(document.getElementById('lockScreen')); showToast('Unlocked'); }
+  else{ showToast('Wrong password'); }
+}
+
+// Change password
+function changePass(){
+  const oldp=document.getElementById('oldpw').value;
+  const newp=document.getElementById('newpw').value;
+  if(oldp===JSON.parse(localStorage.getItem(PASSWORD_KEY))){
+    localStorage.setItem(PASSWORD_KEY,JSON.stringify(newp));
+    showToast('Password changed'); document.getElementById('oldpw').value=''; document.getElementById('newpw').value='';
+  } else showToast('Old password incorrect');
+}
+
+// Toast
+function showToast(msg){ const t=document.createElement('div'); t.textContent=msg; t.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:8px 12px;border-radius:8px;z-index:99999;opacity:1;transition:opacity 500ms'; document.body.appendChild(t); setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),500)},1800); }
+</script>
+</body>
+</html>

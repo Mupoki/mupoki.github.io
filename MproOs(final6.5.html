@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MproOS 3.0 — Full</title>
+<style>
+  :root{
+    --accent:#0078d7; --bg:#0f1720; --task:#16181d; --win:#111318; --muted:#a8b3c7; --glass: rgba(255,255,255,0.06);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:"Segoe UI",system-ui,Roboto,Arial;color:#e6eef8;background:#091017}
+  body{overflow:hidden;background-size:cover;background-position:center;transition:background 300ms ease}
+  /* Desktop icons */
+  #desktop{position:absolute;inset:0;padding:24px;display:flex;flex-wrap:wrap;gap:18px;align-content:flex-start}
+  .icon{width:88px;text-align:center;color:var(--muted);cursor:pointer;user-select:none}
+  .icon img{width:56px;height:56px;border-radius:10px;display:block;margin:0 auto 6px}
+  .icon .label{font-size:13px}
+  /* Window */
+  .window{position:absolute;width:640px;height:420px;background:linear-gradient(180deg,var(--win),#10131a);border-radius:12px;box-shadow:0 18px 60px rgba(2,6,23,0.65);display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+  .titlebar{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;background:linear-gradient(90deg,var(--accent),rgba(0,0,0,0));cursor:move}
+  .titlebar .title{font-weight:600;color:white}
+  .titlebar .controls button{background:transparent;border:none;color:white;font-size:16px;cursor:pointer;margin-left:6px}
+  .win-body{flex:1;padding:12px;overflow:auto;color:#dbe8ff}
+  .small{font-size:13px;color:var(--muted)}
+  /* taskbar */
+  #taskbar{position:fixed;left:0;right:0;bottom:0;height:56px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.25));backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;gap:12px}
+  #taskbar .tray{position:absolute;right:14px;color:var(--muted);font-size:13px;display:flex;gap:10px;align-items:center}
+  #taskbar .center{display:flex;gap:10px;align-items:center}
+  .tb-btn{background:transparent;border:none;color:var(--muted);padding:6px 10px;border-radius:8px;cursor:pointer}
+  .tb-btn:hover{background:rgba(255,255,255,0.03);color:#fff}
+  /* Start Menu */
+  #startMenu{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);width:380px;background:linear-gradient(180deg,#10121a,#0c0e12);border-radius:12px;padding:10px;box-shadow:0 10px 40px rgba(2,6,23,0.7);display:none;color:var(--muted)}
+  #startMenu .apps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  #startMenu .appbtn{background:rgba(255,255,255,0.025);padding:8px;border-radius:8px;text-align:center;cursor:pointer}
+  #startMenu .appbtn img{width:36px;height:36px;display:block;margin:0 auto 6px}
+  /* lock screen */
+  #lockScreen{position:fixed;inset:0;background:rgba(3,6,10,0.8);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;color:#fff}
+  #lockScreen h1{font-weight:700;margin-bottom:6px}
+  #lockScreen input{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);margin-top:10px}
+  /* forms */
+  input[type=text],input[type=password],select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--muted)}
+  button.primary{background:var(--accent);border:none;color:#fff;padding:8px 10px;border-radius:8px;cursor:pointer}
+  .row{display:flex;gap:8px}
+  .col{flex:1}
+  /* small badges */
+  .badge{font-size:11px;padding:4px 8px;background:rgba(255,255,255,0.03);border-radius:999px;color:var(--muted)}
+  /* responsive safety */
+  @media (max-width:800px){.window{width:90%;height:70%}}
+</style>
+</head>
+<body>
+  <!-- LOCK SCREEN -->
+  <div id="lockScreen" style="display:none">
+    <h1>MproOS 3.0</h1>
+    <div class="small">Enter password to unlock</div>
+    <input id="unlockPass" type="password" placeholder="Password (default 1234)" />
+    <div style="height:10px"></div>
+    <div class="row" style="width:260px">
+      <button class="primary" onclick="attemptUnlock()">Unlock</button>
+      <button onclick="showToast('Locked — will remain locked until correct password')">Help</button>
+    </div>
+  </div>
+
+  <!-- DESKTOP -->
+  <div id="desktop"></div>
+
+  <!-- START MENU -->
+  <div id="startMenu">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-weight:700;color:#e6eef8">Start</div>
+      <div class="small">MproOS</div>
+    </div>
+    <div class="apps" id="startApps"></div>
+    <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center">
+      <div class="small">Pinned</div>
+      <div><button onclick="openSettings()" class="tb-btn">Settings</button></div>
+    </div>
+  </div>
+
+  <!-- TASKBAR -->
+  <div id="taskbar">
+    <div class="center">
+      <button id="startBtn" class="tb-btn">☰</button>
+      <div id="quickIcons" style="display:flex;gap:6px"></div>
+    </div>
+    <div class="tray" id="tray">
+      <div id="netBadge" class="badge">Wi-Fi: off</div>
+      <div id="btBadge" class="badge">BT: off</div>
+      <div id="nearBadge" class="badge">Nearby: idle</div>
+      <div id="clock" class="small"></div>
+    </div>
+  </div>
+
+  <!-- Templates: windows will be created dynamically -->
+  <!-- Hidden file input for wallpaper -->
+  <input type="file" id="wallpaperFile" accept="image/*" style="display:none" />
+
+<script>
+/* -------------------------
+   Utilities & state
+   -------------------------*/
+const desktop = document.getElementById('desktop');
+const startMenu = document.getElementById('startMenu');
+const startBtn = document.getElementById('startBtn');
+const quickIcons = document.getElementById('quickIcons');
+const tray = document.getElementById('tray');
+const clockEl = document.getElementById('clock');
+
+let zIndexCounter = 100;
+function newZ(){ return ++zIndexCounter; }
+function show(el){ el.style.display = 'flex'; }
+function hide(el){ el.style.display = 'none'; }
+function toggle(el){ el.style.display = (el.style.display === 'flex' || el.style.display === 'block') ? 'none' : 'flex'; }
+
+function saveLS(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function loadLS(k,def){ const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; }
+
+/* -------------------------
+   Initial data
+   -------------------------*/
+const DEFAULT_PASS = loadLS('mpro_pass','"1234"').replace(/(^"|"$)/g,'') || '1234';
+const PASSWORD_KEY = 'mpro_pass'; // stored as plain text here for demo (you can store hashed)
+if(!localStorage.getItem(PASSWORD_KEY)) localStorage.setItem(PASSWORD_KEY, JSON.stringify('1234'));
+
+// Wi-Fi / BT / Nearby states (simulated)
+let wifiState = loadLS('mpro_wifi',{on:false,connected:null,networks:[
+  {ssid:'Home-WiFi',strength:4,secured:true},
+  {ssid:'MproGuest',strength:2,secured:false},
+  {ssid:'CafeFree',strength:3,secured:false}
+]});
+let btState = loadLS('mpro_bt',{on:false,paired:[{name:'Phone-XX',id:'p1'},{name:'Headset-AB',id:'p2'}],connected:[]});
+let nearState = loadLS('mpro_near',{lastShared:null});
+
+let wallpaper = localStorage.getItem('mpro_wall') || null;
+if(wallpaper){ document.body.style.backgroundImage = `url(${wallpaper})`; document.body.style.backgroundSize='cover' }
+else {
+  // default wallpaper
+  document.body.style.backgroundImage = "url('https://picsum.photos/1600/900?blur=2')";
+  document.body.style.backgroundSize='cover';
+}
+
+/* -------------------------
+   Desktop icons (including My Files that opens file:///)
+   -------------------------*/
+const apps = [
+  {id:'chrome',name:'Chrome',icon:'https://www.google.com/favicon.ico',start:true},
+  {id:'files',name:'My Files',icon:'https://img.icons8.com/fluency/48/folder-invoices.png',start:true},
+  {id:'settings',name:'Settings',icon:'https://img.icons8.com/fluency/48/settings.png',start:true},
+  {id:'control',name:'Control Panel',icon:'https://img.icons8.com/fluency/48/control-panel.png',start:true},
+  {id:'tote',name:'Tote',icon:'https://img.icons8.com/fluency/48/box.png',start:true},
+  {id:'pwchange',name:'Change Password',icon:'https://img.icons8.com/fluency/48/key.png',start:false}
+];
+
+// Put icons on desktop
+function renderDesktop(){
+  desktop.innerHTML = '';
+  apps.forEach(a=>{
+    const d = document.createElement('div');
+    d.className='icon';
+    d.innerHTML = `<img src="${a.icon}" alt="${a.name}"><div class="label">${a.name}</div>`;
+    d.onclick = ()=>openApp(a.id);
+    desktop.appendChild(d);
+  });
+}
+renderDesktop();
+
+// Put start menu app tiles
+function renderStartMenu(){
+  const container = document.getElementById('startApps');
+  container.innerHTML='';
+  apps.forEach(a=>{
+    const btn = document.createElement('div');
+    btn.className='appbtn';
+    btn.innerHTML = `<img src="${a.icon}"><div style="font-size:12px;color:#e9f3ff">${a.name}</div>`;
+    btn.onclick = ()=>{ openApp(a.id); startMenu.style.display='none'; };
+    container.appendChild(btn);
+  });
+}
+renderStartMenu();
+
+/* -------------------------
+   Start button
+   -------------------------*/
+startBtn.onclick = ()=>{ startMenu.style.display = startMenu.style.display==='flex' ? 'none' : 'flex'; }
+
+/* -------------------------
+   Clock / tray updates
+   -------------------------*/
+function updateClock(){
+  const d = new Date();
+  const time = d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  const date = d.toLocaleDateString();
+  clockEl.textContent = `${time} • ${date}`;
+  // update badges
+  document.getElementById('netBadge').textContent = `Wi-Fi: ${wifiState.on ? (wifiState.connected || 'on') : 'off'}`;
+  document.getElementById('btBadge').textContent = `BT: ${btState.on ? 'on' : 'off'}`;
+  document.getElementById('nearBadge').textContent = nearState.lastShared ? 'Nearby: new' : 'Nearby: idle';
+}
+setInterval(updateClock,1000); updateClock();
+
+/* badges in DOM (create once) */
+const netBadge = document.createElement('div'); netBadge.id='netBadge'; netBadge.className='badge'; netBadge.textContent='Wi-Fi';
+const btBadge = document.createElement('div'); btBadge.id='btBadge'; btBadge.className='badge';
+const nearBadge = document.createElement('div'); nearBadge.id='nearBadge'; nearBadge.className='badge';
+tray.insertBefore(netBadge, clockEl);
+tray.insertBefore(btBadge, clockEl);
+tray.insertBefore(nearBadge, clockEl);
+
+/* -------------------------
+   Open App (creates window)
+   -------------------------*/
+function openApp(id){
+  // create window element
+  const win = document.createElement('div'); win.className='window'; win.style.zIndex = newZ();
+  // content and title
+  let title='App', bodyHTML='<div class="small">No content</div>';
+  if(id==='chrome'){
+    title='Chromium';
+    bodyHTML = `
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input id="chromeUrl" type="text" placeholder="Search or paste URL" />
+        <button class="primary" onclick="chromeGo()">Open</button>
+      </div>
+      <div class="small">Searches/URLs open in new tab (uses your default browser engine).</div>
+    `;
+  } else if(id==='files'){
+    title='My Files';
+    // button to open file:///home/chronos/user/MyFiles/
+    const path = 'file:///home/chronos/user/MyFiles/';
+    bodyHTML = `
+      <div class="row" style="margin-bottom:10px">
+        <button class="primary" onclick="openLocalPath('${path}')">Open Local Folder</button>
+        <button onclick="showFakeFiles()">Show Mock Files</button>
+      </div>
+      <div id="filesArea"><em class="small">Tip: Open local folder button will try to open your Chromebook files (file:///home/chronos/user/MyFiles/).</em></div>
+    `;
+  } else if(id==='settings'){
+    title='Settings';
+    bodyHTML = `
+      <div style="display:grid;gap:8px">
+        <div><label class="small">Wallpaper (choose image)</label><div><button class="primary" onclick="triggerWallpaper()">Choose Image</button></div></div>
+        <div><label class="small">Theme Accent</label>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button onclick="setAccent('#0078d7')">Blue</button>
+            <button onclick="setAccent('#10b981')">Green</button>
+            <button onclick="setAccent('#a78bfa')">Purple</button>
+            <button onclick="setAccent('#f97316')">Orange</button>
+          </div>
+        </div>
+        <div>
+          <label class="small">Connectivity</label>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button onclick="toggleWifi()">${wifiState.on ? 'Turn Wi-Fi Off' : 'Turn Wi-Fi On'}</button>
+            <button onclick="toggleBT()">${btState.on ? 'Turn BT Off' : 'Turn BT On'}</button>
+            <button onclick="openNearby()">Nearby Share</button>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if(id==='control'){
+    title='Control Panel';
+    bodyHTML = `
+      <div style="display:grid;gap:8px">
+        <div><strong>System</strong><div class="small">MproOS simulated environment (browser-based)</div></div>
+        <div><strong>Storage</strong><div class="small">localStorage used for settings and saves</div></div>
+        <div><strong>Network</strong><div class="small">Wi-Fi: ${wifiState.on ? (wifiState.connected || 'on') : 'off'}</div></div>
+      </div>
+    `;
+  } else if(id==='tote'){
+    title='Tote';
+    bodyHTML = `<div class="small">Quick shelf / tote. Dragging not implemented in demo but items can be pinned here later.</div>`;
+  } else if(id==='pwchange'){
+    title='Change Password';
+    bodyHTML = `
+      <div style="display:grid;gap:8px">
+        <label class="small">Current Password</label><input type="password" id="curPass" />
+        <label class="small">New Password</label><input type="password" id="newPass" />
+        <label class="small">Confirm New</label><input type="password" id="newPass2" />
+        <div class="row"><button class="primary" onclick="changePassword()">Change</button><button onclick="showToast('Password change cancelled')">Cancel</button></div>
+        <div id="pwMsg" class="small" style="color:#ffd6d6"></div>
+      </div>
+    `;
+  } else {
+    title = id; bodyHTML = '<div class="small">Unknown app</div>';
+  }
+
+  win.innerHTML = `<div class="titlebar"><div class="title">${title}</div><div class="controls"><button onclick="closeWin(this)">✕</button></div></div><div class="win-body">${bodyHTML}</div>`;
+  document.body.appendChild(win);
+  centerWindow(win);
+
+  // make draggable
+  makeDraggable(win);
+  // put on top when clicked
+  win.onmousedown = ()=>{ win.style.zIndex = newZ(); };
+
+  // some windows need focus actions
+  if(id==='chrome'){
+    setTimeout(()=>{ const el = win.querySelector('#chromeUrl'); if(el) el.focus(); },200);
+  }
+}
+
+/* -------------------------
+   Window helpers
+   -------------------------*/
+function closeWin(btn){ const w = btn.closest('.window'); if(w) w.remove(); }
+function centerWindow(win){
+  const w = window.innerWidth, h = window.innerHeight;
+  win.style.left = (w - win.offsetWidth)/2 + 'px';
+  win.style.top = (h - win.offsetHeight)/2 + 'px';
+  win.style.display = 'flex';
+}
+
+/* Dragging */
+function makeDraggable(win){
+  const bar = win.querySelector('.titlebar');
+  let offsetX=0, offsetY=0, isDown=false;
+  bar.addEventListener('mousedown', (e)=>{
+    isDown = true; offsetX = e.clientX - win.offsetLeft; offsetY = e.clientY - win.offsetTop;
+    win.style.zIndex = newZ();
+    document.body.style.userSelect = 'none';
+  });
+  document.addEventListener('mousemove', (e)=>{
+    if(!isDown) return;
+    win.style.left = (e.clientX - offsetX) + 'px';
+    win.style.top = (e.clientY - offsetY) + 'px';
+  });
+  document.addEventListener('mouseup', ()=>{ isDown = false; document.body.style.userSelect = ''; });
+}
+
+/* -------------------------
+   Chrome app: open URLs/new tabs
+   -------------------------*/
+function chromeGo(){
+  const inp = document.querySelector('.window input#chromeUrl') || document.getElementById('chromeUrl');
+  if(!inp) return;
+  let val = inp.value.trim();
+  if(!val) return;
+  if(!/^https?:\/\//i.test(val)) {
+    // treat as search
+    const q = encodeURIComponent(val);
+    val = `https://www.bing.com/search?q=${q}`;
+  }
+  // open in new tab
+  window.open(val, '_blank');
+}
+
+/* -------------------------
+   My Files: open local path (file://)
+   -------------------------*/
+function openLocalPath(path){
+  // Try to open path in same tab; some browsers may block file navigation from file://. Try window.location or open
+  try {
+    // attempt new tab first:
+    window.open(path, '_blank');
+  } catch(e){
+    try { window.location.href = path; } catch(err) { alert('Unable to open path due to browser security settings.'); }
+  }
+}
+function showFakeFiles(){
+  const area = document.getElementById('filesArea');
+  if(!area) return;
+  area.innerHTML = `<div class="small">Mock files:</div>
+    <ul><li>document.txt</li><li>photo.jpg</li><li>presentation.pptx</li></ul>
+    <div class="small">To open your real files folder use the "Open Local Folder" button.</div>`;
+}
+
+/* -------------------------
+   Settings: wallpaper & theme & connectivity
+   -------------------------*/
+const wallpaperFile = document.getElementById('wallpaperFile');
+function triggerWallpaper(){ wallpaperFile.click(); }
+wallpaperFile.addEventListener('change',(e)=>{
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    const data = ev.target.result;
+    localStorage.setItem('mpro_wall', data);
+    document.body.style.backgroundImage = `url(${data})`;
+    document.body.style.backgroundSize = 'cover';
+    showToast('Wallpaper saved');
+  };
+  reader.readAsDataURL(file);
+});
+function setAccent(color){
+  document.documentElement.style.setProperty('--accent', color);
+  showToast('Accent changed');
+}
+
+/* -------------------------
+   Wi-Fi (simulated)
+   -------------------------*/
+function toggleWifi(){
+  wifiState.on = !wifiState.on;
+  if(!wifiState.on) wifiState.connected = null;
+  saveLS('mpro_wifi', wifiState);
+  showToast('Wi-Fi ' + (wifiState.on ? 'on' : 'off'));
+  updateClock();
+  // open a small window listing networks when turned on
+  if(wifiState.on) showWifiList();
+}
+function showWifiList(){
+  const winId = 'wifi_win';
+  // if one already exists remove it
+  const existing = document.querySelector('.window[data-id="'+winId+'"]');
+  if(existing){ existing.remove(); }
+  const win = document.createElement('div'); win.className='window'; win.style.zIndex = newZ(); win.setAttribute('data-id',winId);
+  win.innerHTML = `<div class="titlebar"><div class="title">Wi-Fi Networks</div><div class="controls"><button onclick="this.closest('.window').remove()">✕</button></div></div>
+    <div class="win-body">${wifiState.networks.map((n,idx)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px;border-radius:6px;margin-bottom:6px;background:rgba(255,255,255,0.02)">
+      <div>
+        <div style="font-weight:600">${n.ssid}</div>
+        <div class="small">${n.secured ? 'Secured' : 'Open'} • ${'▮'.repeat(n.strength)}</div>
+      </div>
+      <div><button onclick="connectWifi(${idx})" class="primary">${wifiState.connected===n.ssid ? 'Disconnect' : 'Connect'}</button></div>
+    </div>`).join('')}</div>`;
+  document.body.appendChild(win); centerWindow(win); makeDraggable(win);
+}
+function connectWifi(idx){
+  const n = wifiState.networks[idx];
+  if(!wifiState.on){ alert('Wi-Fi is off'); return; }
+  if(wifiState.connected === n.ssid){ wifiState.connected = null; showToast('Disconnected'); }
+  else wifiState.connected = n.ssid;
+  saveLS('mpro_wifi', wifiState); updateClock();
+  // refresh wifi window contents
+  document.querySelectorAll('.window[data-id="wifi_win"]').forEach(w=>w.remove());
+  showWifiList();
+}
+
+/* -------------------------
+   Bluetooth (simulated)
+   -------------------------*/
+function toggleBT(){
+  btState.on = !btState.on;
+  if(!btState.on) btState.connected = [];
+  saveLS('mpro_bt', btState);
+  showToast('Bluetooth ' + (btState.on ? 'on' : 'off'));
+  updateClock();
+  if(btState.on) showBTList();
+}
+function showBTList(){
+  const winId = 'bt_win';
+  document.querySelectorAll('.window[data-id="'+winId+'"]').forEach(n=>n.remove());
+  const win = document.createElement('div'); win.className='window'; win.style.zIndex = newZ(); win.setAttribute('data-id',winId);
+  win.innerHTML = `<div class="titlebar"><div class="title">Bluetooth Devices</div><div class="controls"><button onclick="this.closest('.window').remove()">✕</button></div></div>
+    <div class="win-body">
+      ${btState.paired.map((d,idx)=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px;border-radius:6px;margin-bottom:6px;background:rgba(255,255,255,0.02)">
+        <div><div style="font-weight:600">${d.name}</div><div class="small">ID: ${d.id}</div></div>
+        <div><button onclick="toggleBtConnect(${idx})" class="primary">${btState.connected.includes(d.id)?'Disconnect':'Connect'}</button></div>
+      </div>`).join('')}
+      <div class="small">Tip: This is a simulated BT UI, not the real system BT.</div>
+    </div>`;
+  document.body.appendChild(win); centerWindow(win); makeDraggable(win);
+}
+function toggleBtConnect(idx){
+  const dev = btState.paired[idx];
+  if(!btState.on){ alert('Bluetooth is off'); return; }
+  const i = btState.connected.indexOf(dev.id);
+  if(i>=0){ btState.connected.splice(i,1); showToast('Device disconnected') }
+  else { btState.connected.push(dev.id); showToast('Device connected') }
+  saveLS('mpro_bt', btState); showBTList(); updateClock();
+}
+
+/* -------------------------
+   Nearby Share (simulated)
+   -------------------------*/
+function openNearby(){
+  const winId='near_win';
+  document.querySelectorAll('.window[data-id="'+winId+'"]').forEach(n=>n.remove());
+  const win = document.createElement('div'); win.className='window'; win.style.zIndex=newZ(); win.setAttribute('data-id',winId);
+  win.innerHTML = `<div class="titlebar"><div class="title">Nearby Share</div><div class="controls"><button onclick="this.closest('.window').remove()">✕</button></div></div>
+    <div class="win-body">
+      <div style="margin-bottom:8px"><input id="nearMsg" type="text" placeholder="Message to nearby devices" /></div>
+      <div class="row"><button class="primary" onclick="nearSend()">Share</button><button onclick="nearReceive()">Receive</button></div>
+      <div style="margin-top:8px" id="nearLog" class="small">${nearState.lastShared ? 'Last: '+nearState.lastShared : 'No recent shares'}</div>
+    </div>`;
+  document.body.appendChild(win); centerWindow(win); makeDraggable(win);
+}
+function nearSend(){
+  const v = document.getElementById('nearMsg').value.trim();
+  if(!v) { showToast('Type a message'); return; }
+  nearState.lastShared = v;
+  saveLS('mpro_near', nearState);
+  showToast('Shared to nearby devices (simulated)');
+  document.getElementById('nearLog').textContent = 'Last: '+v;
+}
+function nearReceive(){
+  if(nearState.lastShared){ alert('Received: '+nearState.lastShared); showToast('Received message'); }
+  else showToast('No recent share found');
+}
+
+/* -------------------------
+   Password change & lock
+   -------------------------*/
+function attemptUnlock(){
+  const attempt = document.getElementById('unlockPass').value || '';
+  const stored = JSON.parse(localStorage.getItem(PASSWORD_KEY) || JSON.stringify('1234'));
+  if(attempt === stored){
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('unlockPass').value='';
+    showToast('Unlocked');
+  } else showToast('Wrong password', true);
+}
+function changePassword(){
+  const cur = document.getElementById('curPass').value || '';
+  const newp = document.getElementById('newPass').value || '';
+  const newp2 = document.getElementById('newPass2').value || '';
+  const stored = JSON.parse(localStorage.getItem(PASSWORD_KEY) || JSON.stringify('1234'));
+  const msg = document.getElementById('pwMsg');
+  if(cur !== stored){ msg.textContent = 'Current password incorrect'; return; }
+  if(newp.length < 4){ msg.textContent = 'New password too short'; return; }
+  if(newp !== newp2){ msg.textContent = 'New passwords do not match'; return; }
+  localStorage.setItem(PASSWORD_KEY, JSON.stringify(newp));
+  msg.style.color = '#baf5c4'; msg.textContent = 'Password changed'; showToast('Password updated');
+}
+
+/* -------------------------
+   Helper: show toast
+   -------------------------*/
+let toastTimer = null;
+function showToast(msg, err=false){
+  let t = document.getElementById('mpro_toast');
+  if(!t){
+    t = document.createElement('div'); t.id='mpro_toast';
+    t.style.position='fixed'; t.style.bottom='80px'; t.style.left='50%'; t.style.transform='translateX(-50%)';
+    t.style.background='rgba(0,0,0,0.7)'; t.style.color='#fff'; t.style.padding='10px 14px'; t.style.borderRadius='10px'; t.style.zIndex='99999';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg; t.style.background = err ? 'rgba(200,50,50,0.9)' : 'rgba(0,0,0,0.7)';
+  t.style.display = 'block';
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.style.display='none'; }, 3000);
+}
+
+/* -------------------------
+   Save/load helpers wrappers
+   -------------------------*/
+function saveLS(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function loadLS(k,def){ const raw = localStorage.getItem(k); return raw ? JSON.parse(raw) : def; }
+
+/* ensure wifi/bt/near saved on changes */
+function saveConnectivity(){ localStorage.setItem('mpro_wifi', JSON.stringify(wifiState)); localStorage.setItem('mpro_bt', JSON.stringify(btState)); localStorage.setItem('mpro_near', JSON.stringify(nearState)); }
+
+/* -------------------------
+   Utilities to open settings quickly
+   -------------------------*/
+function openSettings(){ openApp('settings'); }
+function openAppById(id){ openApp(id); }
+
+/* -------------------------
+   Startup: maybe lock screen on first load?
+   -------------------------*/
+(function init(){
+  // Put quick icons into taskbar for main apps
+  apps.filter(a=>a.start).forEach(a=>{
+    const btn = document.createElement('button'); btn.className='tb-btn'; btn.title = a.name;
+    btn.innerHTML = `<img src="${a.icon}" style="width:18px;height:18px;vertical-align:middle;margin-right:6px">${a.name}`;
+    btn.onclick = ()=>openApp(a.id);
+    quickIcons.appendChild(btn);
+  });
+  // initial badges
+  updateClock();
+  // show lock screen initially
+  if(!localStorage.getItem('mpro_unlocked_once')){ document.getElementById('lockScreen').style.display = 'flex'; localStorage.setItem('mpro_unlocked_once','1') }
+  // update saved states into variables
+  wifiState = loadLS('mpro_wifi', wifiState); btState = loadLS('mpro_bt', btState); nearState = loadLS('mpro_near', nearState);
+})();
+
+</script>
+</body>
+</html>

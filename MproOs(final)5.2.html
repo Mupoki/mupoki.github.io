@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MproOS 3.0</title>
+<style>
+  :root {
+    --accent:#0078d7;
+    --bg:#0e1013;
+    --taskbar:#1c1f26;
+    --window:#1f2229;
+    --text:#e4e6eb;
+  }
+  *{box-sizing:border-box;user-select:none}
+  body {
+    margin:0;
+    overflow:hidden;
+    height:100vh;
+    background-size:cover;
+    background-position:center;
+    font-family:"Segoe UI",sans-serif;
+    color:var(--text);
+  }
+  #lockScreen{
+    position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:rgba(0,0,0,0.6);backdrop-filter:blur(12px);z-index:9999;
+  }
+  #lockScreen input{
+    margin-top:10px;padding:10px 15px;border:none;border-radius:6px;
+  }
+  #desktop{
+    position:absolute;inset:0;padding:20px;display:flex;flex-wrap:wrap;gap:15px;
+  }
+  .icon{
+    width:80px;text-align:center;cursor:pointer;
+  }
+  .icon img{
+    width:48px;height:48px;border-radius:8px;
+  }
+  .window{
+    position:absolute;top:100px;left:100px;width:500px;height:350px;background:var(--window);
+    border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden;
+  }
+  .titlebar{
+    height:35px;background:var(--accent);display:flex;align-items:center;justify-content:space-between;
+    padding:0 10px;color:#fff;cursor:move;
+  }
+  .titlebar button{background:transparent;border:none;color:white;font-size:18px;cursor:pointer;}
+  .content{flex:1;background:#181a1f;overflow:auto;padding:10px;}
+  #taskbar{
+    position:fixed;bottom:0;left:0;right:0;height:50px;background:var(--taskbar);
+    display:flex;align-items:center;justify-content:center;gap:20px;
+  }
+  #taskbar button{
+    background:transparent;border:none;cursor:pointer;color:var(--text);
+    font-size:16px;display:flex;align-items:center;gap:5px;padding:5px 10px;
+  }
+  #startMenu{
+    position:fixed;bottom:60px;left:50%;transform:translateX(-50%);
+    width:300px;background:var(--window);border-radius:10px;display:none;flex-direction:column;
+    padding:10px;box-shadow:0 0 10px rgba(0,0,0,.6);
+  }
+  #startMenu button{
+    background:#2a2d34;border:none;margin:5px 0;padding:8px 10px;border-radius:6px;color:var(--text);
+    text-align:left;cursor:pointer;
+  }
+  #datetime{
+    position:absolute;right:15px;color:var(--text);font-size:14px;
+  }
+  #wallpaperInput{display:none;}
+</style>
+</head>
+<body>
+<div id="lockScreen">
+  <h1>MproOS 3.0</h1>
+  <p>Enter password to unlock</p>
+  <input type="password" id="unlockPass" placeholder="Password (default: 1234)">
+  <button onclick="unlock()">Unlock</button>
+</div>
+
+<div id="desktop"></div>
+
+<div id="taskbar">
+  <button id="startBtn">☰ Start</button>
+  <div id="datetime"></div>
+</div>
+
+<div id="startMenu">
+  <button onclick="openApp('chrome')">🌐 Chrome</button>
+  <button onclick="openApp('files')">📁 My Files</button>
+  <button onclick="openApp('settings')">⚙️ Settings</button>
+  <button onclick="openApp('control')">🧩 Control Panel</button>
+  <button onclick="openApp('tote')">🧺 Tote</button>
+  <button onclick="lock()">🔒 Lock Screen</button>
+</div>
+
+<input type="file" id="wallpaperInput" accept="image/*">
+
+<script>
+let z=1;
+const desktop=document.getElementById('desktop');
+const wallpaperInput=document.getElementById('wallpaperInput');
+const startMenu=document.getElementById('startMenu');
+const datetime=document.getElementById('datetime');
+const defaultPass="1234";
+
+// ---------- INIT WALLPAPER ----------
+function loadWallpaper(){
+  const wp=localStorage.getItem('mpro_wallpaper');
+  if(wp) document.body.style.backgroundImage=`url(${wp})`;
+  else document.body.style.backgroundImage="url('https://picsum.photos/1920/1080?blur')";
+}
+loadWallpaper();
+
+// ---------- LOCK/UNLOCK ----------
+function lock(){document.getElementById('lockScreen').style.display='flex';}
+function unlock(){
+  const p=document.getElementById('unlockPass').value;
+  if(p===defaultPass){document.getElementById('lockScreen').style.display='none';}
+  else alert('Wrong password!');
+}
+
+// ---------- TIME ----------
+function updateTime(){
+  const d=new Date();
+  datetime.textContent=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+" | "+d.toLocaleDateString();
+}
+setInterval(updateTime,1000);updateTime();
+
+// ---------- START MENU ----------
+document.getElementById('startBtn').onclick=()=>{
+  startMenu.style.display=(startMenu.style.display==='flex'?'none':'flex');
+};
+
+// ---------- ICONS ----------
+const apps=[
+  {id:'chrome',name:'Chrome',icon:'https://www.google.com/favicon.ico'},
+  {id:'files',name:'My Files',icon:'https://img.icons8.com/fluency/48/folder-invoices.png'},
+  {id:'settings',name:'Settings',icon:'https://img.icons8.com/fluency/48/settings.png'},
+  {id:'control',name:'Control Panel',icon:'https://img.icons8.com/fluency/48/control-panel.png'},
+  {id:'tote',name:'Tote',icon:'https://img.icons8.com/fluency/48/box.png'}
+];
+apps.forEach(app=>{
+  const div=document.createElement('div');div.className='icon';
+  div.innerHTML=`<img src="${app.icon}"><br>${app.name}`;
+  div.onclick=()=>openApp(app.id);
+  desktop.appendChild(div);
+});
+
+// ---------- APP WINDOWS ----------
+function openApp(id){
+  startMenu.style.display='none';
+  const win=document.createElement('div');win.className='window';win.style.zIndex=++z;
+  let title,content;
+  switch(id){
+    case 'chrome':
+      title='Chrome';
+      content=`<input type='text' id='urlInput' placeholder='Search or type URL' style='width:100%;padding:5px;'>
+      <button onclick="openSearch()">Go</button>`;
+      break;
+    case 'files':
+      title='My Files';
+      content='<p>Local files access is limited in sandbox mode.</p>';
+      break;
+    case 'settings':
+      title='Settings';
+      content=`<button onclick="wallpaperInput.click()">Change Wallpaper</button>`;
+      break;
+    case 'control':
+      title='Control Panel';
+      content='<p>System controls placeholder.</p>';
+      break;
+    case 'tote':
+      title='Tote';
+      content='<p>Drag your stuff here later!</p>';
+      break;
+    default:
+      title=id;content='App not found';
+  }
+  win.innerHTML=`<div class='titlebar'><span>${title}</span><button onclick='this.closest(".window").remove()'>×</button></div><div class='content'>${content}</div>`;
+  desktop.appendChild(win);
+  dragElement(win);
+}
+
+// ---------- DRAG ----------
+function dragElement(el){
+  const bar=el.querySelector(".titlebar");
+  let x=0,y=0,dx=0,dy=0;
+  bar.onmousedown=(e)=>{
+    e.preventDefault();
+    x=e.clientX;y=e.clientY;
+    document.onmousemove=(e2)=>{
+      dx=x-e2.clientX;dy=y-e2.clientY;
+      x=e2.clientX;y=e2.clientY;
+      el.style.top=(el.offsetTop-dy)+"px";
+      el.style.left=(el.offsetLeft-dx)+"px";
+    };
+    document.onmouseup=()=>{document.onmousemove=null;document.onmouseup=null;};
+  };
+}
+
+// ---------- WALLPAPER CHANGE ----------
+wallpaperInput.onchange=e=>{
+  const file=e.target.files[0];
+  if(file){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      localStorage.setItem('mpro_wallpaper',reader.result);
+      loadWallpaper();
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// ---------- CHROME APP SEARCH ----------
+function openSearch(){
+  const url=document.getElementById('urlInput').value.trim();
+  if(!url)return;
+  let target=url;
+  if(!url.startsWith('http')) target='https://www.bing.com/search?q='+encodeURIComponent(url);
+  window.open(target,'_blank');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MproOS 3.0</title>
+<style>
+body,html{margin:0;padding:0;height:100%;font-family:sans-serif;background:#091017;overflow:hidden;color:#e6eef8}
+#desktop{position:absolute;inset:0;padding:20px;display:flex;flex-wrap:wrap;gap:20px}
+.icon{width:80px;text-align:center;cursor:pointer}
+.icon img{width:48px;height:48px;margin-bottom:6px}
+.window{position:absolute;width:600px;height:400px;background:#111318;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.7);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:scale(0.85);transition:all 0.2s ease}
+.window.show{opacity:1;transform:scale(1)}
+.titlebar{height:36px;background:#1a1a1f;display:flex;align-items:center;justify-content:space-between;padding:0 10px;cursor:move}
+.titlebar .title{font-weight:600}
+.titlebar button{background:none;border:none;color:white;cursor:pointer;font-size:16px}
+.win-body{flex:1;padding:10px;overflow:auto}
+#taskbar{position:fixed;bottom:0;left:0;right:0;height:50px;background:#16181d;display:flex;align-items:center;justify-content:center;gap:10px}
+.tb-btn{background:transparent;border:none;color:#a8b3c7;padding:5px 10px;border-radius:8px;cursor:pointer}
+.tb-btn:hover{background:rgba(255,255,255,0.05);color:white}
+#lockScreen{position:fixed;inset:0;background:rgba(3,6,10,0.8);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;z-index:9999;display:none}
+#lockScreen input{padding:8px;border-radius:6px;border:none;margin-top:10px;width:200px}
+</style>
+</head>
+<body>
+
+<div id="desktop"></div>
+
+<div id="taskbar">
+<button id="startBtn" class="tb-btn">☰ Start</button>
+<button class="tb-btn" onclick="lockNow()">🔒 Lock</button>
+</div>
+
+<div id="lockScreen">
+<h1>MproOS 3.0</h1>
+<div>Enter password</div>
+<input id="unlockPass" type="password" placeholder="Password">
+<button onclick="attemptUnlock()" class="tb-btn">Unlock</button>
+</div>
+
+<script>
+// Desktop apps
+const apps=[
+{id:'files',name:'My Files',icon:'https://img.icons8.com/fluency/48/folder-invoices.png'},
+{id:'tote',name:'Tote',icon:'https://img.icons8.com/fluency/48/box.png'},
+{id:'chrome',name:'Chrome',icon:'https://www.google.com/favicon.ico'}
+];
+
+const desktop=document.getElementById('desktop');
+apps.forEach(a=>{
+    const d=document.createElement('div'); d.className='icon';
+    d.innerHTML=`<img src="${a.icon}"><div>${a.name}</div>`;
+    d.onclick=()=>openApp(a.id);
+    desktop.appendChild(d);
+});
+
+let zIndexCounter=100;
+function newZ(){return ++zIndexCounter;}
+function makeDraggable(win){
+    const bar=win.querySelector('.titlebar');
+    let offsetX=0,offsetY=0,isDown=false;
+    bar.addEventListener('mousedown',e=>{isDown=true; offsetX=e.clientX-win.offsetLeft; offsetY=e.clientY-win.offsetTop; win.style.zIndex=newZ();});
+    document.addEventListener('mousemove',e=>{if(!isDown)return;win.style.left=(e.clientX-offsetX)+'px';win.style.top=(e.clientY-offsetY)+'px';});
+    document.addEventListener('mouseup',()=>{isDown=false;});
+}
+
+// Open apps
+function openApp(id){
+    const win=document.createElement('div'); win.className='window'; win.style.zIndex=newZ();
+    let title='App',bodyHTML='';
+    if(id==='files'){
+        title='My Files';
+        bodyHTML=`<button onclick="openFilesChooser()">Choose Files</button><div id="filesArea"></div>`;
+    }else if(id==='tote'){
+        title='Tote';
+        bodyHTML=`<div id="toteArea"></div>`;
+        renderTote();
+    }else if(id==='chrome'){
+        title='Chrome';
+        bodyHTML=`<input type="text" id="chromeUrl" placeholder="Search or URL" style="width:80%"><button onclick="alert('Open '+document.getElementById('chromeUrl').value)">Go</button>`;
+    }
+    win.innerHTML=`<div class="titlebar"><div class="title">${title}</div><button onclick="win.remove()">✖</button></div><div class="win-body">${bodyHTML}</div>`;
+    desktop.appendChild(win);
+    win.style.left='100px'; win.style.top='80px';
+    setTimeout(()=>win.classList.add('show'),10);
+    makeDraggable(win);
+}
+
+// Files
+function openFilesChooser(){
+    const chooser=document.createElement('input'); chooser.type='file'; chooser.multiple=true;
+    chooser.onchange=e=>{
+        const files=Array.from(e.target.files).map(f=>f.name);
+        localStorage.setItem('mpro_files',JSON.stringify(files));
+        renderFiles(files);
+        renderTote();
+    };
+    chooser.click();
+}
+function renderFiles(files){
+    const area=document.getElementById('filesArea'); if(!area) return;
+    area.innerHTML='';
+    files.forEach(f=>{const d=document.createElement('div'); d.textContent=f; area.appendChild(d);});
+}
+function renderTote(){
+    const area=document.getElementById('toteArea'); if(!area)return;
+    const files=JSON.parse(localStorage.getItem('mpro_files')||'[]');
+    area.innerHTML='';
+    files.forEach(f=>{const d=document.createElement('div'); d.textContent=f; area.appendChild(d);});
+}
+
+// Lock screen
+const PASSWORD='1234';
+function lockNow(){document.getElementById('lockScreen').style.display='flex';}
+function attemptUnlock(){
+    const val=document.getElementById('unlockPass').value;
+    if(val===PASSWORD){document.getElementById('lockScreen').style.display='none';alert('Unlocked');}
+    else alert('Wrong password');
+}
+</script>
+</body>
+</html>
