@@ -1,117 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-adsense-account" content="ca-pub-1263564566192061">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1263564566192061"
-     crossorigin="anonymous"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mpro (Official Website &copy;)</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        header {
-            background-color: #00FFEF;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #333;
-        }
-        nav a {
-            color: white;
-            padding: 14px 20px;
-            text-decoration: none;
-            text-align: center;
-        }
-        nav a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        main {
-            padding: 20px;
-            max-width: 1000px;
-            margin: auto;
-        }
-        .placeholder-img {
-            width: 100%;
-            max-width: 600px;
-            height: 300px;
-            background-color: #ccc;
-            display: block;
-            margin: 20px auto;
-            text-align: center;
-            line-height: 300px;
-            color: #666;
-            font-size: 24px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            margin: 10px 0;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        footer {
-            text-align: center;
-            padding: 15px 0;
-            background-color: #333;
-            color: white;
-            margin-top: 40px;
-        }
-    </style>
+  <meta name="google-adsense-account" content="ca-pub-1263564566192061">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1263564566192061" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mpro Services (Official Website ©)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #333;
+      transition: background 0.5s, color 0.5s;
+    }
+    body.dark {
+      background: linear-gradient(135deg, #0d1117, #1b2735);
+      color: #e6edf3;
+    }
+    header {
+      background-color: rgba(0, 184, 184, 0.9);
+      color: white;
+      padding: 20px 0;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color: rgba(51, 51, 51, 0.9);
+      backdrop-filter: blur(6px);
+    }
+    nav a {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 6px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    nav a:hover {
+      background-color: #00b8b8;
+      color: black;
+      transform: scale(1.05);
+    }
+    main {
+      padding: 30px;
+      max-width: 1000px;
+      margin: 80px auto 40px auto; /* space for button */
+      text-align: center;
+      color: inherit;
+    }
+    .placeholder-img {
+      width: 100%;
+      max-width: 600px;
+      height: 300px;
+      background-color: #ccc;
+      display: block;
+      margin: 20px auto;
+      text-align: center;
+      line-height: 300px;
+      color: #666;
+      font-size: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    button {
+      background-color: #00b8b8;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      margin: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+    }
+    button:hover {
+      background-color: #009999;
+      transform: scale(1.07);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    footer {
+      text-align: center;
+      padding: 15px 0;
+      background-color: rgba(51, 51, 51, 0.9);
+      color: white;
+      margin-top: 40px;
+      backdrop-filter: blur(6px);
+    }
+    .toggle-container {
+      position: fixed;
+      top: 20px;
+      right: 20px; /* moved from center */
+      z-index: 1000;
+    }
+    .toggle-btn {
+      background-color: #00b8b8;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .toggle-btn:hover {
+      background-color: #009999;
+      transform: scale(1.05);
+    }
+    .logo {
+      width: 120px;
+      display: block;
+      margin: 20px auto 0;
+      border-radius: 50%;
+      box-shadow: 0 0 15px rgba(0, 184, 184, 0.6);
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>Mpro</h1>
-        <p>Services</p>
-    </header>
+  <div class="toggle-container">
+    <button class="toggle-btn" onclick="toggleMode()">🌙 Dark Mode</button>
+  </div>
 
-    <nav>
-        <!-- Replace the href="#" with your page URLs -->
-        <a href="https://mupoki.github.io/">Home</a>
-        <a href="about.html">About</a>
-        <a href="services.html">Services</a>
-        <a href="https://mupoki.github.io/Gta5/">Gta IV (bympro)</a>
-    </nav>
+  <header>
+    <img src="Mu_poki.png" alt="Mu_poki Logo" class="logo" onerror="this.style.display='none'">
+    <h1>Mpro</h1>
+    <p>Services</p>
+  </header>
 
-<main>  
-    <h2>More stuff</h2>  
-  </p>
-  chose one 
-    </p>  
+  <nav>
+    <a href="https://mupoki.github.io/">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="https://mupoki.github.io/Gta5/">Gta IV (by Mpro)</a>
+  </nav>
 
-    <div class="placeholder-img">Mpro</div>  
+  <main>
+    <h2>More Stuff</h2>
+    <p>Choose one:</p>
 
-    <button onclick="window.location.href='https://sites.google.com/view/poki101'">Our games site</button>  
-    <button onclick="window.location.href='https://sites.google.com/view/steamruner/library'">games</button>  
-    <button onclick="window.location.href='https://www.example.com/blog'">Read Our Blog</button>  
-    <button onclick="window.location.href='https://neal.fun/stimulation-clicker/'">dont Click me or my frind who on the other side</button>  
-    <button onclick="window.location.href='https://www.example.com/faq'">none
-    </button>  
-    <button onclick="window.location.href='mupoki.githum.io'">Home</button>  
-    <button onclick="window.location.href='ai.html'">our ai</button>  
-</main>
+    <div class="placeholder-img">Mpro</div>
 
-    <footer>
-        &copy; 2025 Mpro. All rights reserved.
-    </footer>
+    <button onclick="window.location.href='https://sites.google.com/view/poki101'">Our Games Site</button>
+    <button onclick="window.location.href='https://sites.google.com/view/steamruner/library'">Games</button>
+    <button onclick="window.location.href='https://www.example.com/blog'">Read Our Blog</button>
+    <button onclick="window.location.href='https://neal.fun/stimulation-clicker/'">Don't Click Me</button>
+    <button onclick="window.location.href='https://www.example.com/faq'">None</button>
+    <button onclick="window.location.href='https://mupoki.github.io/'">Home</button>
+    <button onclick="window.location.href='ai.html'">Our AI</button>
+  </main>
+
+  <footer>
+    &copy; 2025 Mpro. All rights reserved.
+  </footer>
+
+  <script>
+    function toggleMode() {
+      document.body.classList.toggle('dark');
+      const btn = document.querySelector('.toggle-btn');
+      const dark = document.body.classList.contains('dark');
+      btn.textContent = dark ? '☀️ Light Mode' : '🌙 Dark Mode';
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+
+    window.onload = () => {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+        document.querySelector('.toggle-btn').textContent = '☀️ Light Mode';
+      }
+    };
+  </script>
 
 </body>
 </html>
-
-
