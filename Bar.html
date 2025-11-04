@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#00000000">
   <link rel="manifest" href="manifest.json">
-  <title>Transparent Top Bar Test</title>
+  <title>Photopea-Style Top Bar Test</title>
   <style>
     :root {
-      --accent: #0ea5e9;
+      --accent: #00b4ff;
       --bg: #0f1720;
-      --nav-bg: rgba(17, 23, 32, 0.6);
-      --nav-border: rgba(255, 255, 255, 0.08);
+      --nav-bg: rgba(17, 23, 32, 0.8);
+      --nav-border: rgba(255, 255, 255, 0.07);
     }
 
     html, body {
@@ -25,36 +25,42 @@
       flex-direction: column;
     }
 
-    /* Transparent top nav */
-    nav {
+    /* Photopea-style top bar */
+    .photopea-bar {
       backdrop-filter: blur(10px);
       background: var(--nav-bg);
       border-bottom: 1px solid var(--nav-border);
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      padding: 0 20px;
-      height: 48px;
-      gap: 20px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      padding: 0 14px;
+      height: 32px;
+      font-size: 13px;
       margin-top: env(titlebar-area-height, 0px);
     }
 
-    nav a {
+    .photopea-bar a {
+      color: #ddd;
       text-decoration: none;
-      color: white;
+      margin: 0 8px;
       opacity: 0.85;
-      font-weight: 500;
-      transition: 0.2s;
+      transition: color 0.2s, opacity 0.2s;
     }
 
-    nav a:hover {
+    .photopea-bar a:hover {
       opacity: 1;
       color: var(--accent);
     }
 
-    /* Page content */
+    .menu, .right-menu {
+      display: flex;
+      align-items: center;
+    }
+
+    .right-menu a {
+      font-weight: 500;
+    }
+
     main {
       flex-grow: 1;
       display: flex;
@@ -86,16 +92,27 @@
   </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="services.html">Services</a>
-    <a href="Gta5.html">Gta IV (bympro)</a>
+  <nav class="photopea-bar">
+    <div class="menu">
+      <a href="#">File</a>
+      <a href="#">Edit</a>
+      <a href="#">Image</a>
+      <a href="#">Layer</a>
+      <a href="#">Select</a>
+      <a href="#">Filter</a>
+      <a href="#">View</a>
+      <a href="#">Window</a>
+      <a href="#">More</a>
+    </div>
+    <div class="right-menu">
+      <a href="#">Account</a>
+      <a href="#">🔍</a>
+    </div>
   </nav>
 
   <main>
-    <h1>🪟 Transparent Top Bar + Menu Test</h1>
-    <p>This demo shows a Chrome OS transparent top bar <br>with a custom navigation like Photopea.</p>
+    <h1>🪟 Transparent Top Bar + Photopea-Style Menu</h1>
+    <p>This demo shows a Chrome OS transparent top bar with a Photopea-like navigation.</p>
   </main>
 
   <div class="install-hint">
