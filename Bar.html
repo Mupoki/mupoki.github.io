@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#00000000">
+  <link rel="manifest" href="manifest.json">
+  <title>Transparent Top Bar Test</title>
+  <style>
+    :root {
+      --accent: #0ea5e9;
+      --bg: #0f1720;
+      --nav-bg: rgba(17, 23, 32, 0.6);
+      --nav-border: rgba(255, 255, 255, 0.08);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #111820, #0f1720);
+      color: white;
+      font-family: "Segoe UI", Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Transparent top nav */
+    nav {
+      backdrop-filter: blur(10px);
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--nav-border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      height: 48px;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      margin-top: env(titlebar-area-height, 0px);
+    }
+
+    nav a {
+      text-decoration: none;
+      color: white;
+      opacity: 0.85;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    nav a:hover {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    /* Page content */
+    main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      opacity: 0.8;
+      font-size: 1rem;
+    }
+
+    .install-hint {
+      position: fixed;
+      bottom: 20px;
+      background: rgba(255,255,255,0.1);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="services.html">Services</a>
+    <a href="Gta5.html">Gta IV (bympro)</a>
+  </nav>
+
+  <main>
+    <h1>🪟 Transparent Top Bar + Menu Test</h1>
+    <p>This demo shows a Chrome OS transparent top bar <br>with a custom navigation like Photopea.</p>
+  </main>
+
+  <div class="install-hint">
+    Tip: Click ⋮ → “Install app” to test Chrome OS top bar transparency.
+  </div>
+</body>
+</html>
