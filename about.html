@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Mpro</title>
+  <link rel="icon" type="image/png" href="Mu_poki.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #00e0cf;
+      --primary-hover: #00b8a9;
+      --bg-dark: #0f172a;
+      --card-dark: rgba(30, 41, 59, 0.7);
+      --text-dark: #f1f5f9;
+      --transition: all 0.3s ease;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    /* --- Navigation --- */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 1rem;
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+      margin: 20px auto;
+      max-width: 600px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      transition: var(--transition);
+    }
+    nav a:hover { background: var(--primary); color: #000; }
+
+    /* --- About Content --- */
+    main {
+      max-width: 1000px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+    }
+
+    .hero-section {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .hero-section h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(90deg, #fff, var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .glass-card {
+      background: var(--card-dark);
+      backdrop-filter: blur(12px);
+      padding: 2.5rem;
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .stats-container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 3rem;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-size: 2.5rem;
+      color: var(--primary);
+    }
+
+    .stat-item p {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.7;
+    }
+
+    .vision-box {
+      margin-top: 4rem;
+      text-align: center;
+      border-left: 4px solid var(--primary);
+      padding: 2rem;
+      background: rgba(0, 224, 207, 0.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 5rem 0 2rem;
+      opacity: 0.5;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      .content-grid { grid-template-columns: 1fr; }
+      .hero-section h1 { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="about.html" style="background: var(--primary); color: #000;">About</a>
+    <a href="services.html">Services</a>
+    <a href="MproOs.html">MproOS</a>
+  </nav>
+
+  <main>
+    <section class="hero-section">
+      <h1>Engineering the Future</h1>
+      <p>Mpro is a creative collective building the next generation of digital experiences.</p>
+    </section>
+
+    <div class="content-grid">
+      <div class="glass-card">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">Who We Are</h2>
+        <p>
+          Founded in 2024, Mpro started as a small experimental project to bridge the gap between simple web tools and complex operating systems. Today, we develop everything from <strong>Mpro OS</strong>—a custom browser-based workspace—to immersive interactive experiences.
+        </p>
+        <br>
+        <p>
+          We believe that software should be beautiful, fast, and accessible to everyone, regardless of their hardware.
+        </p>
+      </div>
+
+      <div class="image-placeholder" style="background: linear-gradient(45deg, #1e293b, #00e0cf); height: 300px; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.5rem; transform: rotate(2deg);">
+        MPRO INDUSTRY
+      </div>
+    </div>
+
+    <div class="stats-container">
+      <div class="stat-item">
+        <h3>50k+</h3>
+        <p>Users</p>
+      </div>
+      <div class="stat-item">
+        <h3>100+</h3>
+        <p>Live Active Projects</p>
+      </div>
+      <div class="stat-item">
+        <h3>3hr</h3>
+        <p>Innovation</p>
+      </div>
+    </div>
+
+    <section class="vision-box">
+      <h2>Our Vision</h2>
+      <p>"To turn the abstract into the actionable. We don't just build websites; we build environments where ideas can breathe."</p>
+    </section>
+
+    <footer>
+      &copy; 2026 Mpro Industry. Designed for the web, built for you.
+    </footer>
+  </main>
+
+</body>
+</html>
