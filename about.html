@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+v<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -18,7 +18,6 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-dark);
@@ -26,19 +25,37 @@
       line-height: 1.6;
     }
 
+    /* --- Custom Context Menu --- */
+    #custom-cm {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      width: 180px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 8px 0;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .cm-item { padding: 10px 16px; font-size: 0.85rem; color: white; cursor: pointer; transition: 0.2s; }
+    .cm-item:hover { background: var(--primary); color: #000; }
+    .cm-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 5px 0; }
+
     /* --- Navigation --- */
     nav {
       display: flex;
+      align-items: center;
       justify-content: center;
       gap: 0.5rem;
       background: rgba(15, 23, 42, 0.8);
       backdrop-filter: blur(10px);
-      padding: 1rem;
+      padding: 0.8rem 1.5rem;
       position: sticky;
       top: 20px;
       z-index: 100;
       margin: 20px auto;
-      max-width: 600px;
+      max-width: fit-content;
       border-radius: 50px;
       border: 1px solid rgba(255,255,255,0.1);
     }
@@ -52,6 +69,26 @@
       transition: var(--transition);
     }
     nav a:hover { background: var(--primary); color: #000; }
+
+    /* --- Search Bar in Nav --- */
+    .search-container {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 15px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-left: 10px;
+    }
+    .search-container input {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 0.8rem;
+      width: 100px;
+      transition: width 0.4s;
+    }
+    .search-container input:focus { width: 160px; }
 
     /* --- About Content --- */
     main {
@@ -126,16 +163,29 @@
     @media (max-width: 768px) {
       .content-grid { grid-template-columns: 1fr; }
       .hero-section h1 { font-size: 2.5rem; }
+      .search-container { display: none; } /* Hide search on small mobile */
     }
   </style>
 </head>
 <body>
+
+  <div id="custom-cm">
+    <div class="cm-item" onclick="location.reload()">Refresh Page</div>
+    <div class="cm-divider"></div>
+    <div class="cm-item" onclick="location.href='index.html'">Dashboard</div>
+    <div class="cm-item" onclick="location.href='https://scratch.mit.edu/projects/1170904352/'">Launch MproOS</div>
+    <div class="cm-divider"></div>
+    <div class="cm-item" onclick="window.open('https://github.com/mupoki', '_blank')">Mpro Github</div>
+  </div>
 
   <nav>
     <a href="index.html">Home</a>
     <a href="about.html" style="background: var(--primary); color: #000;">About</a>
     <a href="services.html">Services</a>
     <a href="https://scratch.mit.edu/projects/1170904352/">MproOS</a>
+    <div class="search-container">
+      <input type="text" placeholder="Search..." id="navSearch">
+    </div>
   </nav>
 
   <main>
@@ -156,7 +206,7 @@
         </p>
       </div>
 
-      <div class="image-placeholder" style="background: linear-gradient(45deg, #1e293b, #00e0cf); height: 300px; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.5rem; transform: rotate(2deg);">
+      <div class="image-placeholder" style="background: linear-gradient(45deg, #1e293b, #00e0cf); height: 300px; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.5rem; transform: rotate(2deg); box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         MPRO INDUSTRY
       </div>
     </div>
@@ -186,5 +236,38 @@
     </footer>
   </main>
 
+  <script>
+    // Context Menu Logic
+    const contextMenu = document.getElementById("custom-cm");
+
+    document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      
+      // Safety: ensure menu shows inside viewport
+      let x = e.clientX;
+      let y = e.clientY;
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+      
+      if (x + 180 > winWidth) x = winWidth - 190;
+      if (y + 200 > winHeight) y = winHeight - 210;
+
+      contextMenu.style.top = `${y}px`;
+      contextMenu.style.left = `${x}px`;
+      contextMenu.style.display = "block";
+    });
+
+    document.addEventListener("click", () => {
+      contextMenu.style.display = "none";
+    });
+
+    // Simple Search Logic
+    document.getElementById('navSearch').addEventListener('keyup', (e) => {
+      if (e.key === "Enter") {
+        console.log("Searching for: " + e.target.value);
+        // You can redirect to a search results page or filter elements here
+      }
+    });
+  </script>
 </body>
 </html>
