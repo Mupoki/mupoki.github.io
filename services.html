@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +7,6 @@
   <link rel="icon" type="image/png" href="Mu_poki.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
   
-  
   <style>
     :root {
       --primary: #00e0cf;
@@ -16,6 +14,7 @@
       --bg-dark: #0f172a;
       --card-dark: rgba(30, 41, 59, 0.7);
       --text-dark: #f1f5f9;
+      --error-red: #ff4b4b;
       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -26,6 +25,19 @@
       background-color: var(--bg-dark);
       color: var(--text-dark);
       line-height: 1.6;
+    }
+
+    /* --- Professional Alert Banner --- */
+    .alert-banner {
+      background: rgba(255, 75, 75, 0.15);
+      border: 1px solid var(--error-red);
+      color: #ff9494;
+      padding: 15px;
+      text-align: center;
+      margin: 20px auto;
+      max-width: 800px;
+      border-radius: 12px;
+      font-size: 0.9rem;
     }
 
     /* --- Custom Context Menu --- */
@@ -73,7 +85,6 @@
     }
     nav a:hover { background: var(--primary); color: #000; }
 
-    /* --- Nav Search Bar --- */
     .search-container {
       display: flex;
       align-items: center;
@@ -89,28 +100,28 @@
       color: white;
       font-size: 0.8rem;
       width: 100px;
+      outline: none;
       transition: width 0.4s;
     }
     .search-container input:focus { width: 160px; }
 
-    /* --- Main Container --- */
+    /* --- Main Layout --- */
     main {
       max-width: 1200px;
-      margin: 4rem auto;
+      margin: 2rem auto;
       padding: 0 2rem;
     }
 
     .section-title {
       text-align: center;
-      margin-bottom: 4rem;
+      margin-bottom: 3rem;
     }
     .section-title h1 {
       font-size: 3rem;
       font-weight: 800;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
 
-    /* --- Service Grid --- */
     .services-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -187,31 +198,36 @@
     <a href="services.html" style="background: var(--primary); color: #000;">Services</a>
     <a href="MproOs.html">MproOS</a>
     <div class="search-container">
-      <input type="text" placeholder="Search games..." id="gameSearch">
+      <input type="text" placeholder="Search..." id="gameSearch">
     </div>
   </nav>
 
   <main>
+    <div class="alert-banner">
+      <strong>Technical Alert:</strong> Significant server error detected. Laptop/Tablet users may see bugs; Mobile is stable. Our team is working on it—no need to report!
+    </div>
+
     <div class="section-title">
       <h1>Our Ecosystem</h1>
       <p>Explore our lineup of custom software and curated gaming experiences.</p>
     </div>
-        <div class="services-grid" id="servicesGrid">
-      <div class="service-card" data-name="mpro os system software">
-        <span class="badge">hacking</span>
-        <div>
-          <h2>Wifi decoder</h2>
-          <p>Experience a fully functional, browser-based Wifi decoder with unlimettel wifi's to <i>Hack</i>.</p>
-        </div>
-        <a href="mupoki.github.io/apps/wifi.html" class="btn-action">Start decoding</a>
-      </div>
 
     <div class="services-grid" id="servicesGrid">
+      
+      <div class="service-card" data-name="wifi decoder hacking tool">
+        <span class="badge">Hacking</span>
+        <div>
+          <h2>Wifi Decoder</h2>
+          <p>Experience a fully functional, browser-based Wifi decoder with unlimited networks to test.</p>
+        </div>
+        <a href="mupoki.github.io/apps/wifi.html" class="btn-action">Start Decoding</a>
+      </div>
+
       <div class="service-card" data-name="mpro os system software">
         <span class="badge">System</span>
         <div>
           <h2>Mpro OS</h2>
-          <p>Experience a fully functional, browser-based operating system. Fast, intuitive, and built for the modern web explorer.</p>
+          <p>Experience a fully functional, browser-based operating system. Fast, intuitive, and modern.</p>
         </div>
         <a href="https://scratch.mit.edu/projects/1170904352/" class="btn-action">Launch OS</a>
       </div>
@@ -220,7 +236,7 @@
         <span class="badge">Gaming</span>
         <div>
           <h2>GTA IV</h2>
-          <p>Relive the classic Liberty City experience directly through the Mpro portal. Optimized for seamless navigation.</p>
+          <p>Relive the classic Liberty City experience directly through the Mpro portal.</p>
         </div>
         <a href="https://mupoki.github.io/Gta5/" class="btn-action">Play Now</a>
       </div>
@@ -229,7 +245,7 @@
         <span class="badge">Gaming</span>
         <div>
           <h2>Forza Horizon 5</h2>
-          <p>The ultimate driving festival. High-speed racing and open-world exploration, curated by Mpro.</p>
+          <p>The ultimate driving festival. High-speed racing and open-world exploration.</p>
         </div>
         <a href="https://mupoki.github.io/Forza_Horizon_4_FULL_GAME/" class="btn-action">Start Racing</a>
       </div>
@@ -237,7 +253,7 @@
       <div class="service-card" data-name="real life type game upcoming future project">
         <span class="badge">Upcoming</span>
         <div>
-          <h2>Real-life type game</h2>
+          <h2>Project: Real Life</h2>
           <p>We are currently developing a game to shape the future. Stay tuned for the release.</p>
         </div>
         <a href="#" class="btn-action" style="background: #334155; color: #fff; cursor: not-allowed;">Coming Soon</a>
@@ -252,7 +268,7 @@
   </main>
 
   <script>
-    // --- Context Menu Logic ---
+    // --- Context Menu ---
     const contextMenu = document.getElementById("custom-cm");
     document.addEventListener("contextmenu", (e) => {
       e.preventDefault();
@@ -265,7 +281,7 @@
     });
     document.addEventListener("click", () => contextMenu.style.display = "none");
 
-    // --- WORKING SEARCH LOGIC ---
+    // --- Search Logic ---
     const searchInput = document.getElementById('gameSearch');
     const cards = document.querySelectorAll('.service-card');
     const noResults = document.getElementById('noResults');
