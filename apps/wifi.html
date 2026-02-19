@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📡 Wi-Fi Data Decoder</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .main-container { max-width: 700px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .steps { background: #fff3cd; padding: 15px; border-left: 5px solid #ffc107; margin-bottom: 20px; font-size: 0.9rem; }
+        textarea { width: 100%; height: 120px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace; }
+        button { background: #28a745; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        #output { margin-top: 20px; display: none; border-top: 2px solid #eee; padding-top: 15px; }
+        .res { color: #2c3e50; font-weight: bold; background: #e9ecef; padding: 5px 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <h2>📡 Wi-Fi Data Decoder</h2>
+    
+    <div class="steps">
+        <strong>How to get the data:</strong>
+        <ol>
+            <li>Open a new tab and type <code>chrome://sync-internals/</code></li>
+            <li>Click on the <strong>Sync Node Browser</strong> tab at the top.</li>
+            <li>On the left, find and click <strong>Wifi Configurations</strong>.</li>
+            <li>Click <strong>Search</strong> to see your saved networks.</li>
+            <li>Click a network, copy the JSON block, and paste it below!</li>
+        </ol>
+    </div>
+
+    <textarea id="jsonInput" placeholder="Paste JSON here..."></textarea>
+    <button onclick="decodeData()">DECODE NETWORK</button>
+
+    <div id="output">
+        <p><strong>SSID:</strong> <span id="ssidResult" class="res"></span></p>
+        <p><strong>Password:</strong> <span id="passResult" class="res"></span></p>
+    </div>
+</div>
+
+<script>
+function decodeData() {
+    try {
+        const data = JSON.parse(document.getElementById('jsonInput').value);
+        const wifi = data.SPECIFICS.wifi_configuration;
+
+        // Decode Password
+        const pass = atob(wifi.passphrase);
+
+        // Decode Hex SSID
+        const rawBase64SSID = atob(wifi.hex_ssid);
+        let ssid = "";
+        for (let i = 0; i < rawBase64SSID.length; i += 2) {
+            let code = parseInt(rawBase64SSID.substr(i, 2), 16);
+            if (!isNaN(code)) ssid += String.fromCharCode(code);
+            else { ssid = rawBase64SSID; break; }
+        }
+
+        document.getElementById('ssidResult').innerText = ssid;
+        document.getElementById('passResult').innerText = pass;
+        document.getElementById('output').style.display = 'block';
+    } catch (e) {
+        alert("Barnacles! Please paste a valid JSON block.");
+    }
+}
+</script>
+
+</body>
+</html>
